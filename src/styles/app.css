@@ -1,0 +1,12 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@source "../../node_modules/@raideno/auto-form";
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.radix-themes {
+  --cursor-button: pointer !important;
+}
