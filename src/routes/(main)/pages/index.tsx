@@ -17,9 +17,8 @@ export const Route = createFileRoute('/(main)/pages/')({
     const router = useRouter()
 
     const pages = Object.entries(router.routesByPath)
-      .filter(([path]) => {
-        return path.startsWith('/pages/')
-      })
+      .filter(([path, _]) => path.startsWith('/pages/'))
+      .filter(([_, route]) => 'head' in route.options)
       .map(([path, route]) => {
         const metadata = Object.fromEntries(
           route.options
