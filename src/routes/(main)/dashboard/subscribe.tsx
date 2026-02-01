@@ -24,10 +24,7 @@ export const Route = createFileRoute('/(main)/dashboard/subscribe')({
     isNew: z.boolean().optional(),
   }),
   beforeLoad: async ({ context, search }) => {
-    if (
-      !context.authentication.isAuthenticated ||
-      !context.authentication.user
-    ) {
+    if (!context.user.isAuthenticated || !context.user.user) {
       throw redirect({
         to: '/',
         search: {

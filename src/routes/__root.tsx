@@ -22,10 +22,9 @@ import type { QueryClient } from '@tanstack/react-query'
 import type { AuthenticationContextType } from '@/contexts/tanstack/authentication'
 import type { OnboardingsContextType } from '@/contexts/tanstack/onboardings'
 import type { SubscriptionContextType } from '@/contexts/tanstack/subscription'
+import type { UserContextType } from '@/contexts/tanstack/user'
 
 import { loadAuthenticationContext } from '@/contexts/tanstack/authentication'
-import { loadOnboardingsContext } from '@/contexts/tanstack/onboardings'
-import { loadSubscriptionContext } from '@/contexts/tanstack/subscription'
 
 import appCss from '@/styles/app.css?url'
 
@@ -45,6 +44,7 @@ import { cn } from '@/lib/utils'
 
 export interface RouteContext {
   queryClient: QueryClient
+  user: UserContextType
   authentication: AuthenticationContextType
   subscription: SubscriptionContextType
   onboardings: OnboardingsContextType
@@ -76,16 +76,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
 export const Route = createRootRouteWithContext<RouteContext>()({
   beforeLoad: async () => {
-    const [authentication, subscription, onboardings] = await Promise.all([
-      loadAuthenticationContext(),
-      loadSubscriptionContext(),
-      loadOnboardingsContext(),
-    ])
+    const [authentication] = await Promise.all([loadAuthenticationContext()])
 
     return {
       authentication,
-      subscription,
-      onboardings,
     }
   },
   head: () => {

@@ -65,9 +65,6 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ children }) => {
   // TODO: careful in case the component is used outside of the route
   const context = useRouteContext({ from: '/' })
 
-  const authentication = context.authentication
-  // const authentication = useAuthActions()
-
   const closingDueToAuthRef = React.useRef(false)
 
   const search = route.useSearch()
@@ -130,7 +127,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ children }) => {
 
     try {
       setIsLoading(true)
-      await authentication.signInOtp.send({
+      await context.authentication.signInOtp.send({
         phone: `+${data.phone[0]}${cleanedPhone}`,
       })
       setPhone(`+${data.phone[0]}${cleanedPhone}`)
@@ -149,7 +146,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ children }) => {
   ) => {
     setIsLoading(true)
     try {
-      await authentication.signInOtp.validate({
+      await context.authentication.signInOtp.validate({
         phone: phone,
         code: data.code,
       })

@@ -49,7 +49,7 @@ export function AccountCard({ user }: AccountCardProps) {
 
   const confirm = useConfirm()
 
-  const authentication = context.authentication
+  const authentication = context.user
   // const authentication = useAuthActions()
 
   const [isOpen, setIsOpen] = useLocalStorageState(

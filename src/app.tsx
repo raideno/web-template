@@ -12,6 +12,7 @@ export const router = createRouter({
     authentication: undefined!,
     subscription: undefined!,
     onboardings: undefined!,
+    user: undefined!,
   },
 })
 
@@ -30,6 +31,7 @@ export const App = ({ queryClient }: { queryClient: QueryClient }) => {
         authentication: undefined!,
         subscription: undefined!,
         onboardings: undefined!,
+        user: undefined!,
       }}
     />
   )

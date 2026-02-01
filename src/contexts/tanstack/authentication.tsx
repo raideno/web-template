@@ -1,16 +1,11 @@
-import type { FunctionReturnType } from 'convex/server'
-
+import { router } from '@/app'
 import { api } from '@/convex.generated/api'
 import { convex } from '@/main'
-import { router } from '@/app'
 
 // __convexAuthJWT_httpscolorlessswordfish824convexcloud
 // https://colorless-swordfish-824.convex.cloud
 
 export interface AuthenticationContextType {
-  user: FunctionReturnType<typeof api.auth.self> | null | undefined
-  isAuthenticated: boolean
-  isLoading: boolean
   signInOtp: {
     send: (params: { phone: string }) => Promise<{ started: boolean }>
     validate: (params: {
@@ -19,9 +14,7 @@ export interface AuthenticationContextType {
     }) => Promise<{ tokens: { token: string; refreshToken: string } | null }>
   }
   signInMagic: {
-    exchange: (params: {
-      code: string
-    }) => Promise<{
+    exchange: (params: { code: string }) => Promise<{
       tokens: { token: string; refreshToken: string } | null
       redirectTo: string
     }>
@@ -30,8 +23,6 @@ export interface AuthenticationContextType {
 }
 
 export async function loadAuthenticationContext(): Promise<AuthenticationContextType> {
-  const user = await convex.query(api.auth.self, {})
-
   const namespace = convex.url
     .replaceAll('://', '')
     .replaceAll('-', '')
@@ -101,9 +92,6 @@ export async function loadAuthenticationContext(): Promise<AuthenticationContext
   }
 
   return {
-    user,
-    isAuthenticated: Boolean(user),
-    isLoading: false,
     signInOtp: {
       send: signIn,
       validate,

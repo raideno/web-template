@@ -7,10 +7,7 @@ import {
 
 export const Route = createFileRoute('/(main)/dashboard/onboardings/')({
   beforeLoad: ({ context }) => {
-    if (
-      !context.authentication.isAuthenticated ||
-      !context.authentication.user
-    ) {
+    if (!context.user.isAuthenticated || !context.user.user) {
       throw redirect({
         to: '/',
         search: {

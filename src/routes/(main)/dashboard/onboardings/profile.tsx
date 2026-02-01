@@ -26,8 +26,8 @@ const ProfileSchema = z.object({
 export const Route = createFileRoute('/(main)/dashboard/onboardings/profile')({
   beforeLoad: ({ context }) => {
     handleOnboardingBeforeLoad(
-      context.authentication.isAuthenticated,
-      context.authentication.user,
+      context.user.isAuthenticated,
+      context.user.user,
       context.onboardings.onboardings,
       'profile',
       '/dashboard/onboardings/profile',
