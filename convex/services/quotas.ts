@@ -6,10 +6,9 @@ import type { ActionCtx, MutationCtx } from '@/convex.generated/server'
 
 import { internal } from '@/convex.generated/api'
 import { internalMutation } from '@/convex.generated/server'
-import { safeParseInt } from '@/convex/helpers'
-import { DEFAULT_LIMIT } from '@/convex/parameters'
 import schema from '@/convex/schema'
-import { DEFAULT_QUOTAS } from '../models/quotas'
+// TODO: improve defaults
+import { DEFAULT_QUOTAS } from '@/convex/models/quotas'
 
 export type DeductFromConsumableIfOwnsEnoughType = boolean
 
@@ -33,16 +32,22 @@ export class CreditsService {
     context: MutationCtx | ActionCtx,
     args: {
       userId: Id<'users'>
-      quantity: number;
-      quota: string;
+      quantity: number
+      quota: string
       billingId: string
       subscription: DataModel['stripeSubscriptions']['document']
     },
   ): Promise<DeductFromConsumableIfOwnsEnoughType> {
     if ('runAction' in context)
-      return await this.deductFromConsumableIfOwnsEnoughFromAction(context, args)
+      return await this.deductFromConsumableIfOwnsEnoughFromAction(
+        context,
+        args,
+      )
     else if ('runMutation' in context)
-      return await this.deductFromConsumableIfOwnsEnoughFromMutation(context, args)
+      return await this.deductFromConsumableIfOwnsEnoughFromMutation(
+        context,
+        args,
+      )
     else
       throw new Error(
         'CreditsService.deductFromConsumableIfOwnsEnough can only be called from MutationCtx or ActionCtx',
@@ -53,8 +58,8 @@ export class CreditsService {
     context: ActionCtx,
     args: {
       userId: Id<'users'>
-      quantity: number;
-      quota: string;
+      quantity: number
+      quota: string
       billingId: string
       subscription: DataModel['stripeSubscriptions']['document']
     },
@@ -75,8 +80,8 @@ export class CreditsService {
     context: MutationCtx,
     args: {
       userId: Id<'users'>
-      quantity: number;
-      quota: string;
+      quantity: number
+      quota: string
       billingId: string
       subscription: DataModel['stripeSubscriptions']['document']
     },
@@ -104,16 +109,14 @@ export class CreditsService {
         _creationTime: Date.now(),
         userId: args.userId,
         billingId: args.billingId,
-        quotas: DEFAULT_QUOTAS
+        quotas: DEFAULT_QUOTAS,
       }
     }
 
     const targetQuota = counter.quotas[args.quota]
 
-    if (!targetQuota || targetQuota.type !== 'consumable') {
-      throw new Error(
-        `Quota "${args.quota}" not found or is not consumable`,
-      )
+    if (targetQuota.type !== 'consumable') {
+      throw new Error(`Quota "${args.quota}" not found or is not consumable`)
     }
 
     if (

@@ -34,12 +34,12 @@ const sendVerificationRequestConsole = async (
 ) => {
   console.log('[params.token]:', params.token)
 }
-const sendVerificationRequestTwilio = async (
-  params: Params,
-  context: GenericActionCtxWithAuthConfig<DataModel>,
-) => {
-  throw new Error('Not implemented.')
-}
+const sendVerificationRequestTwilio = async () =>
+  // params: Params,
+  // context: GenericActionCtxWithAuthConfig<DataModel>,
+  {
+    throw new Error('Not implemented.')
+  }
 
 export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
   providers: [
@@ -59,7 +59,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
   ],
   callbacks: {
     afterUserCreatedOrUpdated: async (context, args) => {
-      const isNewUser = args.existingUserId === null
+      // const isNewUser = args.existingUserId === null
 
       await context.scheduler.runAfter(0, internal.stripe.setup, {
         entityId: args.userId,
