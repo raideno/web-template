@@ -7,6 +7,7 @@ import {
   Flex,
   Heading,
   IconButton,
+  Spinner,
   Text,
   Tooltip,
 } from '@radix-ui/themes'
@@ -19,6 +20,7 @@ export interface NavIconButtonProps {
   to: string
   label: string
   icon: React.ReactNode
+  disabled?: boolean
   activeMatcher?: (pathname: string) => boolean
 }
 
@@ -26,6 +28,7 @@ export const NavIconButton: React.FC<NavIconButtonProps> = ({
   to,
   label,
   icon,
+  disabled,
   activeMatcher,
 }) => {
   const { location } = useRouterState()
@@ -45,6 +48,7 @@ export const NavIconButton: React.FC<NavIconButtonProps> = ({
       >
         <Container display={{ initial: 'none', md: 'initial' }}>
           <IconButton
+            disabled={disabled}
             size="3"
             variant={isActive ? 'classic' : 'soft'}
             color={isActive ? 'green' : 'gray'}
@@ -69,15 +73,11 @@ export const NavIconButton: React.FC<NavIconButtonProps> = ({
   )
 }
 
-const NAVIGABLES = [
-  { to: '/', label: 'Home', icon: <HomeIcon /> },
-  { to: '/pages', label: 'Pages', icon: <FileTextIcon /> },
-  { to: '/dashboard', label: 'Dashboard', icon: <ChatBubbleIcon /> },
-]
-
 export interface NavbarProps {}
 
 export const Navbar: React.FC<NavbarProps> = () => {
+  const { isLoading } = useRouterState()
+
   return (
     <Card size="2" variant="surface">
       <Flex align="center" justify="between" gap="3" wrap="wrap">
@@ -97,19 +97,27 @@ export const Navbar: React.FC<NavbarProps> = () => {
           </Flex>
         </Link>
         <Flex width={{ initial: '100%', md: 'auto' }} align="center" gap="3">
-          {NAVIGABLES.map(({ to, label, icon }) => (
-            <NavIconButton
-              key={to}
-              to={to}
-              label={label}
-              icon={icon}
-              activeMatcher={
-                to === '/pages'
-                  ? (p) => p === '/pages' || p.startsWith('/pages/')
-                  : undefined
-              }
-            />
-          ))}
+          <NavIconButton
+            to={'/'}
+            label={'Home'}
+            icon={<HomeIcon />}
+            activeMatcher={(p) => p === '/'}
+          />
+          <NavIconButton
+            to={'/pages'}
+            label={'Pages'}
+            icon={<FileTextIcon />}
+            activeMatcher={(p) => p === '/pages' || p.startsWith('/pages/')}
+          />
+          <NavIconButton
+            disabled={isLoading}
+            to={'/dashboard'}
+            label={'Dashboard'}
+            icon={isLoading ? <Spinner /> : <ChatBubbleIcon />}
+            activeMatcher={(p) =>
+              p === '/dashboard' || p.startsWith('/dashboard/')
+            }
+          />
         </Flex>
       </Flex>
     </Card>
