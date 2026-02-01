@@ -22,10 +22,8 @@ type OnboardingItem = NonNullable<
 
 const resolveOnboardingPath = (
   id: OnboardingItem['id'],
-): '/dashboard/onboardings/agent' | '/dashboard/onboardings/profile' | null => {
+): '/dashboard/onboardings/profile' | null => {
   switch (id) {
-    case 'agent':
-      return '/dashboard/onboardings/agent'
     case 'profile':
       return `/dashboard/onboardings/${id}`
     default:

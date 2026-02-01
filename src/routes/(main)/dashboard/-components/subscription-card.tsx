@@ -38,7 +38,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   )
 
   const { data: usage } = useQuery(
-    convexQuery(api.usage.get, {
+    convexQuery(api.quotas.get, {
       billingId: subscription.billingId,
     }),
   )
@@ -140,35 +140,43 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           <Separator size="4" orientation="horizontal" className="w-full!" />
 
           <Box p="4">
-            {/* TODO: Implement usage metrics component */}
-            <Flex align={'center'} justify={'between'}>
-              <Text size="2" color="gray">
-                Usage
-              </Text>
-              <Text size="2" color="gray">
-                {usage?.messages.current}/{usage?.messages.limit}
-              </Text>
-            </Flex>
-            <Progress
-              value={
-                ((usage?.messages.current || 0) /
-                  (usage?.messages.limit || 0)) *
-                  100 || 0
-              }
-              className="my-2 w-full"
-            />
-            <Flex align={'center'} justify={'between'}>
-              <Text align={'left'} size="2" color="gray">
-                {(usage?.messages.limit || 0) - (usage?.messages.current || 0)}{' '}
-                messages remaining.
-              </Text>
-              <Text align={'right'} size="2" color="gray">
-                Resets{' '}
-                {new Date(
-                  subscription.current_period_end * 1000,
-                ).toLocaleDateString()}
-                .
-              </Text>
+            <Flex direction="column" gap="4">
+              {usage &&
+                Object.entries(usage.quotas)
+                  .filter(([_, quota]) => quota.type === 'consumable')
+                  .map(([key, quota]) => {
+                    if (quota.type !== 'consumable') return null
+
+                    const percentage = (quota.current / quota.limit) * 100 || 0
+                    const remaining = quota.limit - quota.current
+                    const label = key.charAt(0).toUpperCase() + key.slice(1)
+
+                    return (
+                      <Box key={key}>
+                        <Flex align={'center'} justify={'between'}>
+                          <Text size="2" color="gray">
+                            {label}
+                          </Text>
+                          <Text size="2" color="gray">
+                            {quota.current}/{quota.limit}
+                          </Text>
+                        </Flex>
+                        <Progress value={percentage} className="my-2 w-full" />
+                        <Flex align={'center'} justify={'between'}>
+                          <Text align={'left'} size="2" color="gray">
+                            {remaining} {key} remaining.
+                          </Text>
+                          <Text align={'right'} size="2" color="gray">
+                            Resets{' '}
+                            {new Date(
+                              subscription.current_period_end * 1000,
+                            ).toLocaleDateString()}
+                            .
+                          </Text>
+                        </Flex>
+                      </Box>
+                    )
+                  })}
             </Flex>
           </Box>
 

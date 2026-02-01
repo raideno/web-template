@@ -3,12 +3,9 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 import z from 'zod'
 
 import { AccountCard } from './-components/account-card'
-import { AssistantCard } from './-components/assistant-card'
 import { DeveloperCard } from './-components/developer-card'
 import { FeedbackCard } from './-components/feedback-card'
 import { OnboardingsCard } from './-components/onboardings-card'
-import { PhoneShortcutCard } from './-components/phone-shortcut-card'
-import { SchedulesCard } from './-components/schedules-card'
 import { SubscribeDialog } from './-components/subscribe-dialog'
 import { SubscriptionCard } from './-components/subscription-card'
 import { SubscriptionSuccessDialog } from './-components/subscription-success-dialog'
@@ -125,15 +122,9 @@ export const Route = createFileRoute('/(main)/dashboard/')({
 
           <OnboardingsCard />
 
-          <PhoneShortcutCard />
-
           {isSubscribed && <SubscriptionCard subscription={subscription} />}
 
           <SubscribeDialog open={!isSubscribed} />
-
-          {isSubscribed && <SchedulesCard />}
-
-          <AssistantCard />
 
           <AccountCard user={user} />
 

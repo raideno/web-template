@@ -15,7 +15,6 @@ import { Route as mainRouteRouteImport } from './routes/(main)/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as mainPagesIndexRouteImport } from './routes/(main)/pages/index'
 import { Route as mainDashboardIndexRouteImport } from './routes/(main)/dashboard/index'
-import { Route as mainDashboardWhatsappRouteImport } from './routes/(main)/dashboard/whatsapp'
 import { Route as mainDashboardSubscribeRouteImport } from './routes/(main)/dashboard/subscribe'
 import { Route as mainDashboardPaymentRouteImport } from './routes/(main)/dashboard/payment'
 import { Route as mainAuthenticationMagicRouteImport } from './routes/(main)/authentication/magic'
@@ -27,7 +26,6 @@ import { Route as mainPagesLayoutHelpRouteImport } from './routes/(main)/pages/_
 import { Route as mainPagesLayoutContactRouteImport } from './routes/(main)/pages/_layout/contact'
 import { Route as mainPagesLayoutAboutRouteImport } from './routes/(main)/pages/_layout/about'
 import { Route as mainDashboardOnboardingsProfileRouteImport } from './routes/(main)/dashboard/onboardings/profile'
-import { Route as mainDashboardOnboardingsAgentRouteImport } from './routes/(main)/dashboard/onboardings/agent'
 
 const mainPagesRouteImport = createFileRoute('/(main)/pages')()
 
@@ -53,11 +51,6 @@ const mainPagesIndexRoute = mainPagesIndexRouteImport.update({
 const mainDashboardIndexRoute = mainDashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
-  getParentRoute: () => mainRouteRoute,
-} as any)
-const mainDashboardWhatsappRoute = mainDashboardWhatsappRouteImport.update({
-  id: '/dashboard/whatsapp',
-  path: '/dashboard/whatsapp',
   getParentRoute: () => mainRouteRoute,
 } as any)
 const mainDashboardSubscribeRoute = mainDashboardSubscribeRouteImport.update({
@@ -118,12 +111,6 @@ const mainDashboardOnboardingsProfileRoute =
     path: '/dashboard/onboardings/profile',
     getParentRoute: () => mainRouteRoute,
   } as any)
-const mainDashboardOnboardingsAgentRoute =
-  mainDashboardOnboardingsAgentRouteImport.update({
-    id: '/dashboard/onboardings/agent',
-    path: '/dashboard/onboardings/agent',
-    getParentRoute: () => mainRouteRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -131,10 +118,8 @@ export interface FileRoutesByFullPath {
   '/authentication/magic': typeof mainAuthenticationMagicRoute
   '/dashboard/payment': typeof mainDashboardPaymentRoute
   '/dashboard/subscribe': typeof mainDashboardSubscribeRoute
-  '/dashboard/whatsapp': typeof mainDashboardWhatsappRoute
   '/dashboard': typeof mainDashboardIndexRoute
   '/pages/': typeof mainPagesIndexRoute
-  '/dashboard/onboardings/agent': typeof mainDashboardOnboardingsAgentRoute
   '/dashboard/onboardings/profile': typeof mainDashboardOnboardingsProfileRoute
   '/pages/about': typeof mainPagesLayoutAboutRoute
   '/pages/contact': typeof mainPagesLayoutContactRoute
@@ -149,9 +134,7 @@ export interface FileRoutesByTo {
   '/authentication/magic': typeof mainAuthenticationMagicRoute
   '/dashboard/payment': typeof mainDashboardPaymentRoute
   '/dashboard/subscribe': typeof mainDashboardSubscribeRoute
-  '/dashboard/whatsapp': typeof mainDashboardWhatsappRoute
   '/dashboard': typeof mainDashboardIndexRoute
-  '/dashboard/onboardings/agent': typeof mainDashboardOnboardingsAgentRoute
   '/dashboard/onboardings/profile': typeof mainDashboardOnboardingsProfileRoute
   '/pages/about': typeof mainPagesLayoutAboutRoute
   '/pages/contact': typeof mainPagesLayoutContactRoute
@@ -169,10 +152,8 @@ export interface FileRoutesById {
   '/(main)/authentication/magic': typeof mainAuthenticationMagicRoute
   '/(main)/dashboard/payment': typeof mainDashboardPaymentRoute
   '/(main)/dashboard/subscribe': typeof mainDashboardSubscribeRoute
-  '/(main)/dashboard/whatsapp': typeof mainDashboardWhatsappRoute
   '/(main)/dashboard/': typeof mainDashboardIndexRoute
   '/(main)/pages/': typeof mainPagesIndexRoute
-  '/(main)/dashboard/onboardings/agent': typeof mainDashboardOnboardingsAgentRoute
   '/(main)/dashboard/onboardings/profile': typeof mainDashboardOnboardingsProfileRoute
   '/(main)/pages/_layout/about': typeof mainPagesLayoutAboutRoute
   '/(main)/pages/_layout/contact': typeof mainPagesLayoutContactRoute
@@ -189,10 +170,8 @@ export interface FileRouteTypes {
     | '/authentication/magic'
     | '/dashboard/payment'
     | '/dashboard/subscribe'
-    | '/dashboard/whatsapp'
     | '/dashboard'
     | '/pages/'
-    | '/dashboard/onboardings/agent'
     | '/dashboard/onboardings/profile'
     | '/pages/about'
     | '/pages/contact'
@@ -207,9 +186,7 @@ export interface FileRouteTypes {
     | '/authentication/magic'
     | '/dashboard/payment'
     | '/dashboard/subscribe'
-    | '/dashboard/whatsapp'
     | '/dashboard'
-    | '/dashboard/onboardings/agent'
     | '/dashboard/onboardings/profile'
     | '/pages/about'
     | '/pages/contact'
@@ -226,10 +203,8 @@ export interface FileRouteTypes {
     | '/(main)/authentication/magic'
     | '/(main)/dashboard/payment'
     | '/(main)/dashboard/subscribe'
-    | '/(main)/dashboard/whatsapp'
     | '/(main)/dashboard/'
     | '/(main)/pages/'
-    | '/(main)/dashboard/onboardings/agent'
     | '/(main)/dashboard/onboardings/profile'
     | '/(main)/pages/_layout/about'
     | '/(main)/pages/_layout/contact'
@@ -279,13 +254,6 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof mainDashboardIndexRouteImport
-      parentRoute: typeof mainRouteRoute
-    }
-    '/(main)/dashboard/whatsapp': {
-      id: '/(main)/dashboard/whatsapp'
-      path: '/dashboard/whatsapp'
-      fullPath: '/dashboard/whatsapp'
-      preLoaderRoute: typeof mainDashboardWhatsappRouteImport
       parentRoute: typeof mainRouteRoute
     }
     '/(main)/dashboard/subscribe': {
@@ -365,13 +333,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof mainDashboardOnboardingsProfileRouteImport
       parentRoute: typeof mainRouteRoute
     }
-    '/(main)/dashboard/onboardings/agent': {
-      id: '/(main)/dashboard/onboardings/agent'
-      path: '/dashboard/onboardings/agent'
-      fullPath: '/dashboard/onboardings/agent'
-      preLoaderRoute: typeof mainDashboardOnboardingsAgentRouteImport
-      parentRoute: typeof mainRouteRoute
-    }
   }
 }
 
@@ -413,9 +374,7 @@ interface mainRouteRouteChildren {
   mainAuthenticationMagicRoute: typeof mainAuthenticationMagicRoute
   mainDashboardPaymentRoute: typeof mainDashboardPaymentRoute
   mainDashboardSubscribeRoute: typeof mainDashboardSubscribeRoute
-  mainDashboardWhatsappRoute: typeof mainDashboardWhatsappRoute
   mainDashboardIndexRoute: typeof mainDashboardIndexRoute
-  mainDashboardOnboardingsAgentRoute: typeof mainDashboardOnboardingsAgentRoute
   mainDashboardOnboardingsProfileRoute: typeof mainDashboardOnboardingsProfileRoute
   mainDashboardOnboardingsIndexRoute: typeof mainDashboardOnboardingsIndexRoute
 }
@@ -425,9 +384,7 @@ const mainRouteRouteChildren: mainRouteRouteChildren = {
   mainAuthenticationMagicRoute: mainAuthenticationMagicRoute,
   mainDashboardPaymentRoute: mainDashboardPaymentRoute,
   mainDashboardSubscribeRoute: mainDashboardSubscribeRoute,
-  mainDashboardWhatsappRoute: mainDashboardWhatsappRoute,
   mainDashboardIndexRoute: mainDashboardIndexRoute,
-  mainDashboardOnboardingsAgentRoute: mainDashboardOnboardingsAgentRoute,
   mainDashboardOnboardingsProfileRoute: mainDashboardOnboardingsProfileRoute,
   mainDashboardOnboardingsIndexRoute: mainDashboardOnboardingsIndexRoute,
 }

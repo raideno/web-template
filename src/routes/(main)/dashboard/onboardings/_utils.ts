@@ -13,14 +13,11 @@ export type OnboardingItem = NonNullable<
   FunctionReturnType<typeof api.onboardings.list>
 >[number]
 
-export type OnboardingPath =
-  | '/dashboard/onboardings/agent'
-  | '/dashboard/onboardings/profile'
+export type OnboardingPath = '/dashboard/onboardings/profile'
 
 export const resolveOnboardingPath = (
   id: OnboardingItem['id'],
 ): OnboardingPath => {
-  if (id === 'agent') return '/dashboard/onboardings/agent'
   if (id === 'profile') return '/dashboard/onboardings/profile'
   throw new Error(`Unknown onboarding id: ${id}`)
 }
