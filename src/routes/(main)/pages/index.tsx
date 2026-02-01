@@ -1,3 +1,4 @@
+import React from 'react'
 import {
   Box,
   Card,
@@ -7,39 +8,37 @@ import {
   Separator,
   Text,
 } from '@radix-ui/themes'
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute, useRouter } from '@tanstack/react-router'
 
 import { PageHeaderCard } from '@/components/layout/page-header-card'
 
 export const Route = createFileRoute('/(main)/pages/')({
   component: () => {
-    const pages = [
-      {
-        to: '/pages/about',
-        title: 'About',
-        description: 'Learn about Closeby.tel mission and principles',
-      },
-      {
-        to: '/pages/help',
-        title: 'Help & FAQ',
-        description: 'Get support answers and common questions',
-      },
-      {
-        to: '/pages/contact',
-        title: 'Contact',
-        description: 'Reach the Closeby.tel team',
-      },
-      {
-        to: '/pages/terms-of-service',
-        title: 'Terms of Service',
-        description: 'Rules and conditions for using Closeby.tel',
-      },
-      {
-        to: '/pages/privacy-policy',
-        title: 'Privacy Policy',
-        description: 'How we collect, use, and protect your data',
-      },
-    ]
+    const router = useRouter()
+
+    const pages = Object.entries(router.routesByPath)
+      .filter(([path]) => {
+        return path.startsWith('/pages/')
+      })
+      .map(([path, route]) => {
+        const metadata = Object.fromEntries(
+          route.options
+            .head()
+            .meta.map(
+              (
+                meta: React.DetailedHTMLProps<
+                  React.MetaHTMLAttributes<HTMLMetaElement>,
+                  HTMLMetaElement
+                >,
+              ) => [meta.name, meta.content],
+            ),
+        )
+        return {
+          to: path,
+          title: metadata.title,
+          description: metadata.description,
+        }
+      })
 
     return (
       <Container size={'4'}>
