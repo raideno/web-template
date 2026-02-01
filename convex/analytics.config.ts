@@ -2,7 +2,7 @@ import { DiscordProcessorFactory } from '@raideno/convex-analytics/processors/di
 
 import type { InputConfiguration } from '@raideno/convex-analytics/server'
 
-import { DISCORD_WEBHOOK_URL } from './parameters'
+import { DISCORD_WEBHOOK_URL } from '@/convex/parameters'
 
 export default {
   processors: [

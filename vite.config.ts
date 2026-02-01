@@ -1,9 +1,10 @@
 import path from 'node:path'
+import mdx from '@mdx-js/rollup'
 import tailwindcss from '@tailwindcss/vite'
-import react from '@vitejs/plugin-react'
-import tsConfigPaths from 'vite-tsconfig-paths'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
+import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
+import tsConfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig({
   resolve: {
@@ -24,6 +25,10 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
     react(),
+    mdx({
+      jsxImportSource: 'react',
+      providerImportSource: '@mdx-js/react',
+    }),
   ],
   build: {
     sourcemap: true,

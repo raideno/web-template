@@ -12,7 +12,6 @@ export const router = createRouter({
     authentication: undefined!,
     subscription: undefined!,
     onboardings: undefined!,
-    phone: undefined!,
   },
 })
 

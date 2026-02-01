@@ -15,17 +15,16 @@ import {
   createRootRouteWithContext,
   useRouter,
 } from '@tanstack/react-router'
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
 import type { QueryClient } from '@tanstack/react-query'
 
 import type { AuthenticationContextType } from '@/contexts/tanstack/authentication'
 import type { OnboardingsContextType } from '@/contexts/tanstack/onboardings'
-import type { PhoneContextType } from '@/contexts/tanstack/phone'
 import type { SubscriptionContextType } from '@/contexts/tanstack/subscription'
 
 import { loadAuthenticationContext } from '@/contexts/tanstack/authentication'
 import { loadOnboardingsContext } from '@/contexts/tanstack/onboardings'
-import { loadPhoneContext } from '@/contexts/tanstack/phone'
 import { loadSubscriptionContext } from '@/contexts/tanstack/subscription'
 
 import appCss from '@/styles/app.css?url'
@@ -49,7 +48,6 @@ export interface RouteContext {
   authentication: AuthenticationContextType
   subscription: SubscriptionContextType
   onboardings: OnboardingsContextType
-  phone: PhoneContextType
 }
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({
@@ -78,19 +76,16 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
 export const Route = createRootRouteWithContext<RouteContext>()({
   beforeLoad: async () => {
-    const [authentication, subscription, onboardings, phone] =
-      await Promise.all([
-        loadAuthenticationContext(),
-        loadSubscriptionContext(),
-        loadOnboardingsContext(),
-        loadPhoneContext(),
-      ])
+    const [authentication, subscription, onboardings] = await Promise.all([
+      loadAuthenticationContext(),
+      loadSubscriptionContext(),
+      loadOnboardingsContext(),
+    ])
 
     return {
       authentication,
       subscription,
       onboardings,
-      phone,
     }
   },
   head: () => {
@@ -245,5 +240,10 @@ export const Route = createRootRouteWithContext<RouteContext>()({
       </Box>
     </Layout>
   ),
-  component: () => <Outlet />,
+  component: () => (
+    <>
+      <Outlet />
+      <TanStackRouterDevtools />
+    </>
+  ),
 })

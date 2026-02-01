@@ -8,23 +8,28 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as mainRouteRouteImport } from './routes/(main)/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as mainPagesIndexRouteImport } from './routes/(main)/pages/index'
 import { Route as mainDashboardIndexRouteImport } from './routes/(main)/dashboard/index'
-import { Route as mainPagesTermsOfServiceRouteImport } from './routes/(main)/pages/terms-of-service'
-import { Route as mainPagesPrivacyPolicyRouteImport } from './routes/(main)/pages/privacy-policy'
-import { Route as mainPagesHelpRouteImport } from './routes/(main)/pages/help'
-import { Route as mainPagesContactRouteImport } from './routes/(main)/pages/contact'
-import { Route as mainPagesAboutRouteImport } from './routes/(main)/pages/about'
 import { Route as mainDashboardWhatsappRouteImport } from './routes/(main)/dashboard/whatsapp'
 import { Route as mainDashboardSubscribeRouteImport } from './routes/(main)/dashboard/subscribe'
 import { Route as mainDashboardPaymentRouteImport } from './routes/(main)/dashboard/payment'
 import { Route as mainAuthenticationMagicRouteImport } from './routes/(main)/authentication/magic'
+import { Route as mainPagesLayoutRouteRouteImport } from './routes/(main)/pages/_layout/route'
 import { Route as mainDashboardOnboardingsIndexRouteImport } from './routes/(main)/dashboard/onboardings/index'
+import { Route as mainPagesLayoutTermsOfServiceRouteImport } from './routes/(main)/pages/_layout/terms-of-service'
+import { Route as mainPagesLayoutPrivacyPolicyRouteImport } from './routes/(main)/pages/_layout/privacy-policy'
+import { Route as mainPagesLayoutHelpRouteImport } from './routes/(main)/pages/_layout/help'
+import { Route as mainPagesLayoutContactRouteImport } from './routes/(main)/pages/_layout/contact'
+import { Route as mainPagesLayoutAboutRouteImport } from './routes/(main)/pages/_layout/about'
 import { Route as mainDashboardOnboardingsProfileRouteImport } from './routes/(main)/dashboard/onboardings/profile'
 import { Route as mainDashboardOnboardingsAgentRouteImport } from './routes/(main)/dashboard/onboardings/agent'
+
+const mainPagesRouteImport = createFileRoute('/(main)/pages')()
 
 const mainRouteRoute = mainRouteRouteImport.update({
   id: '/(main)',
@@ -35,39 +40,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const mainPagesIndexRoute = mainPagesIndexRouteImport.update({
-  id: '/pages/',
-  path: '/pages/',
+const mainPagesRoute = mainPagesRouteImport.update({
+  id: '/pages',
+  path: '/pages',
   getParentRoute: () => mainRouteRoute,
+} as any)
+const mainPagesIndexRoute = mainPagesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => mainPagesRoute,
 } as any)
 const mainDashboardIndexRoute = mainDashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
-  getParentRoute: () => mainRouteRoute,
-} as any)
-const mainPagesTermsOfServiceRoute = mainPagesTermsOfServiceRouteImport.update({
-  id: '/pages/terms-of-service',
-  path: '/pages/terms-of-service',
-  getParentRoute: () => mainRouteRoute,
-} as any)
-const mainPagesPrivacyPolicyRoute = mainPagesPrivacyPolicyRouteImport.update({
-  id: '/pages/privacy-policy',
-  path: '/pages/privacy-policy',
-  getParentRoute: () => mainRouteRoute,
-} as any)
-const mainPagesHelpRoute = mainPagesHelpRouteImport.update({
-  id: '/pages/help',
-  path: '/pages/help',
-  getParentRoute: () => mainRouteRoute,
-} as any)
-const mainPagesContactRoute = mainPagesContactRouteImport.update({
-  id: '/pages/contact',
-  path: '/pages/contact',
-  getParentRoute: () => mainRouteRoute,
-} as any)
-const mainPagesAboutRoute = mainPagesAboutRouteImport.update({
-  id: '/pages/about',
-  path: '/pages/about',
   getParentRoute: () => mainRouteRoute,
 } as any)
 const mainDashboardWhatsappRoute = mainDashboardWhatsappRouteImport.update({
@@ -90,12 +75,43 @@ const mainAuthenticationMagicRoute = mainAuthenticationMagicRouteImport.update({
   path: '/authentication/magic',
   getParentRoute: () => mainRouteRoute,
 } as any)
+const mainPagesLayoutRouteRoute = mainPagesLayoutRouteRouteImport.update({
+  id: '/_layout',
+  getParentRoute: () => mainPagesRoute,
+} as any)
 const mainDashboardOnboardingsIndexRoute =
   mainDashboardOnboardingsIndexRouteImport.update({
     id: '/dashboard/onboardings/',
     path: '/dashboard/onboardings/',
     getParentRoute: () => mainRouteRoute,
   } as any)
+const mainPagesLayoutTermsOfServiceRoute =
+  mainPagesLayoutTermsOfServiceRouteImport.update({
+    id: '/terms-of-service',
+    path: '/terms-of-service',
+    getParentRoute: () => mainPagesLayoutRouteRoute,
+  } as any)
+const mainPagesLayoutPrivacyPolicyRoute =
+  mainPagesLayoutPrivacyPolicyRouteImport.update({
+    id: '/privacy-policy',
+    path: '/privacy-policy',
+    getParentRoute: () => mainPagesLayoutRouteRoute,
+  } as any)
+const mainPagesLayoutHelpRoute = mainPagesLayoutHelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => mainPagesLayoutRouteRoute,
+} as any)
+const mainPagesLayoutContactRoute = mainPagesLayoutContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => mainPagesLayoutRouteRoute,
+} as any)
+const mainPagesLayoutAboutRoute = mainPagesLayoutAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => mainPagesLayoutRouteRoute,
+} as any)
 const mainDashboardOnboardingsProfileRoute =
   mainDashboardOnboardingsProfileRouteImport.update({
     id: '/dashboard/onboardings/profile',
@@ -111,109 +127,115 @@ const mainDashboardOnboardingsAgentRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/pages': typeof mainPagesLayoutRouteRouteWithChildren
   '/authentication/magic': typeof mainAuthenticationMagicRoute
   '/dashboard/payment': typeof mainDashboardPaymentRoute
   '/dashboard/subscribe': typeof mainDashboardSubscribeRoute
   '/dashboard/whatsapp': typeof mainDashboardWhatsappRoute
-  '/pages/about': typeof mainPagesAboutRoute
-  '/pages/contact': typeof mainPagesContactRoute
-  '/pages/help': typeof mainPagesHelpRoute
-  '/pages/privacy-policy': typeof mainPagesPrivacyPolicyRoute
-  '/pages/terms-of-service': typeof mainPagesTermsOfServiceRoute
   '/dashboard': typeof mainDashboardIndexRoute
-  '/pages': typeof mainPagesIndexRoute
+  '/pages/': typeof mainPagesIndexRoute
   '/dashboard/onboardings/agent': typeof mainDashboardOnboardingsAgentRoute
   '/dashboard/onboardings/profile': typeof mainDashboardOnboardingsProfileRoute
+  '/pages/about': typeof mainPagesLayoutAboutRoute
+  '/pages/contact': typeof mainPagesLayoutContactRoute
+  '/pages/help': typeof mainPagesLayoutHelpRoute
+  '/pages/privacy-policy': typeof mainPagesLayoutPrivacyPolicyRoute
+  '/pages/terms-of-service': typeof mainPagesLayoutTermsOfServiceRoute
   '/dashboard/onboardings': typeof mainDashboardOnboardingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/pages': typeof mainPagesIndexRoute
   '/authentication/magic': typeof mainAuthenticationMagicRoute
   '/dashboard/payment': typeof mainDashboardPaymentRoute
   '/dashboard/subscribe': typeof mainDashboardSubscribeRoute
   '/dashboard/whatsapp': typeof mainDashboardWhatsappRoute
-  '/pages/about': typeof mainPagesAboutRoute
-  '/pages/contact': typeof mainPagesContactRoute
-  '/pages/help': typeof mainPagesHelpRoute
-  '/pages/privacy-policy': typeof mainPagesPrivacyPolicyRoute
-  '/pages/terms-of-service': typeof mainPagesTermsOfServiceRoute
   '/dashboard': typeof mainDashboardIndexRoute
-  '/pages': typeof mainPagesIndexRoute
   '/dashboard/onboardings/agent': typeof mainDashboardOnboardingsAgentRoute
   '/dashboard/onboardings/profile': typeof mainDashboardOnboardingsProfileRoute
+  '/pages/about': typeof mainPagesLayoutAboutRoute
+  '/pages/contact': typeof mainPagesLayoutContactRoute
+  '/pages/help': typeof mainPagesLayoutHelpRoute
+  '/pages/privacy-policy': typeof mainPagesLayoutPrivacyPolicyRoute
+  '/pages/terms-of-service': typeof mainPagesLayoutTermsOfServiceRoute
   '/dashboard/onboardings': typeof mainDashboardOnboardingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/(main)': typeof mainRouteRouteWithChildren
+  '/(main)/pages': typeof mainPagesRouteWithChildren
+  '/(main)/pages/_layout': typeof mainPagesLayoutRouteRouteWithChildren
   '/(main)/authentication/magic': typeof mainAuthenticationMagicRoute
   '/(main)/dashboard/payment': typeof mainDashboardPaymentRoute
   '/(main)/dashboard/subscribe': typeof mainDashboardSubscribeRoute
   '/(main)/dashboard/whatsapp': typeof mainDashboardWhatsappRoute
-  '/(main)/pages/about': typeof mainPagesAboutRoute
-  '/(main)/pages/contact': typeof mainPagesContactRoute
-  '/(main)/pages/help': typeof mainPagesHelpRoute
-  '/(main)/pages/privacy-policy': typeof mainPagesPrivacyPolicyRoute
-  '/(main)/pages/terms-of-service': typeof mainPagesTermsOfServiceRoute
   '/(main)/dashboard/': typeof mainDashboardIndexRoute
   '/(main)/pages/': typeof mainPagesIndexRoute
   '/(main)/dashboard/onboardings/agent': typeof mainDashboardOnboardingsAgentRoute
   '/(main)/dashboard/onboardings/profile': typeof mainDashboardOnboardingsProfileRoute
+  '/(main)/pages/_layout/about': typeof mainPagesLayoutAboutRoute
+  '/(main)/pages/_layout/contact': typeof mainPagesLayoutContactRoute
+  '/(main)/pages/_layout/help': typeof mainPagesLayoutHelpRoute
+  '/(main)/pages/_layout/privacy-policy': typeof mainPagesLayoutPrivacyPolicyRoute
+  '/(main)/pages/_layout/terms-of-service': typeof mainPagesLayoutTermsOfServiceRoute
   '/(main)/dashboard/onboardings/': typeof mainDashboardOnboardingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/pages'
     | '/authentication/magic'
     | '/dashboard/payment'
     | '/dashboard/subscribe'
     | '/dashboard/whatsapp'
+    | '/dashboard'
+    | '/pages/'
+    | '/dashboard/onboardings/agent'
+    | '/dashboard/onboardings/profile'
     | '/pages/about'
     | '/pages/contact'
     | '/pages/help'
     | '/pages/privacy-policy'
     | '/pages/terms-of-service'
-    | '/dashboard'
-    | '/pages'
-    | '/dashboard/onboardings/agent'
-    | '/dashboard/onboardings/profile'
     | '/dashboard/onboardings'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/pages'
     | '/authentication/magic'
     | '/dashboard/payment'
     | '/dashboard/subscribe'
     | '/dashboard/whatsapp'
+    | '/dashboard'
+    | '/dashboard/onboardings/agent'
+    | '/dashboard/onboardings/profile'
     | '/pages/about'
     | '/pages/contact'
     | '/pages/help'
     | '/pages/privacy-policy'
     | '/pages/terms-of-service'
-    | '/dashboard'
-    | '/pages'
-    | '/dashboard/onboardings/agent'
-    | '/dashboard/onboardings/profile'
     | '/dashboard/onboardings'
   id:
     | '__root__'
     | '/'
     | '/(main)'
+    | '/(main)/pages'
+    | '/(main)/pages/_layout'
     | '/(main)/authentication/magic'
     | '/(main)/dashboard/payment'
     | '/(main)/dashboard/subscribe'
     | '/(main)/dashboard/whatsapp'
-    | '/(main)/pages/about'
-    | '/(main)/pages/contact'
-    | '/(main)/pages/help'
-    | '/(main)/pages/privacy-policy'
-    | '/(main)/pages/terms-of-service'
     | '/(main)/dashboard/'
     | '/(main)/pages/'
     | '/(main)/dashboard/onboardings/agent'
     | '/(main)/dashboard/onboardings/profile'
+    | '/(main)/pages/_layout/about'
+    | '/(main)/pages/_layout/contact'
+    | '/(main)/pages/_layout/help'
+    | '/(main)/pages/_layout/privacy-policy'
+    | '/(main)/pages/_layout/terms-of-service'
     | '/(main)/dashboard/onboardings/'
   fileRoutesById: FileRoutesById
 }
@@ -238,53 +260,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(main)/pages/': {
-      id: '/(main)/pages/'
+    '/(main)/pages': {
+      id: '/(main)/pages'
       path: '/pages'
       fullPath: '/pages'
-      preLoaderRoute: typeof mainPagesIndexRouteImport
+      preLoaderRoute: typeof mainPagesRouteImport
       parentRoute: typeof mainRouteRoute
+    }
+    '/(main)/pages/': {
+      id: '/(main)/pages/'
+      path: '/'
+      fullPath: '/pages/'
+      preLoaderRoute: typeof mainPagesIndexRouteImport
+      parentRoute: typeof mainPagesRoute
     }
     '/(main)/dashboard/': {
       id: '/(main)/dashboard/'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof mainDashboardIndexRouteImport
-      parentRoute: typeof mainRouteRoute
-    }
-    '/(main)/pages/terms-of-service': {
-      id: '/(main)/pages/terms-of-service'
-      path: '/pages/terms-of-service'
-      fullPath: '/pages/terms-of-service'
-      preLoaderRoute: typeof mainPagesTermsOfServiceRouteImport
-      parentRoute: typeof mainRouteRoute
-    }
-    '/(main)/pages/privacy-policy': {
-      id: '/(main)/pages/privacy-policy'
-      path: '/pages/privacy-policy'
-      fullPath: '/pages/privacy-policy'
-      preLoaderRoute: typeof mainPagesPrivacyPolicyRouteImport
-      parentRoute: typeof mainRouteRoute
-    }
-    '/(main)/pages/help': {
-      id: '/(main)/pages/help'
-      path: '/pages/help'
-      fullPath: '/pages/help'
-      preLoaderRoute: typeof mainPagesHelpRouteImport
-      parentRoute: typeof mainRouteRoute
-    }
-    '/(main)/pages/contact': {
-      id: '/(main)/pages/contact'
-      path: '/pages/contact'
-      fullPath: '/pages/contact'
-      preLoaderRoute: typeof mainPagesContactRouteImport
-      parentRoute: typeof mainRouteRoute
-    }
-    '/(main)/pages/about': {
-      id: '/(main)/pages/about'
-      path: '/pages/about'
-      fullPath: '/pages/about'
-      preLoaderRoute: typeof mainPagesAboutRouteImport
       parentRoute: typeof mainRouteRoute
     }
     '/(main)/dashboard/whatsapp': {
@@ -315,12 +309,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof mainAuthenticationMagicRouteImport
       parentRoute: typeof mainRouteRoute
     }
+    '/(main)/pages/_layout': {
+      id: '/(main)/pages/_layout'
+      path: '/pages'
+      fullPath: '/pages'
+      preLoaderRoute: typeof mainPagesLayoutRouteRouteImport
+      parentRoute: typeof mainPagesRoute
+    }
     '/(main)/dashboard/onboardings/': {
       id: '/(main)/dashboard/onboardings/'
       path: '/dashboard/onboardings'
       fullPath: '/dashboard/onboardings'
       preLoaderRoute: typeof mainDashboardOnboardingsIndexRouteImport
       parentRoute: typeof mainRouteRoute
+    }
+    '/(main)/pages/_layout/terms-of-service': {
+      id: '/(main)/pages/_layout/terms-of-service'
+      path: '/terms-of-service'
+      fullPath: '/pages/terms-of-service'
+      preLoaderRoute: typeof mainPagesLayoutTermsOfServiceRouteImport
+      parentRoute: typeof mainPagesLayoutRouteRoute
+    }
+    '/(main)/pages/_layout/privacy-policy': {
+      id: '/(main)/pages/_layout/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/pages/privacy-policy'
+      preLoaderRoute: typeof mainPagesLayoutPrivacyPolicyRouteImport
+      parentRoute: typeof mainPagesLayoutRouteRoute
+    }
+    '/(main)/pages/_layout/help': {
+      id: '/(main)/pages/_layout/help'
+      path: '/help'
+      fullPath: '/pages/help'
+      preLoaderRoute: typeof mainPagesLayoutHelpRouteImport
+      parentRoute: typeof mainPagesLayoutRouteRoute
+    }
+    '/(main)/pages/_layout/contact': {
+      id: '/(main)/pages/_layout/contact'
+      path: '/contact'
+      fullPath: '/pages/contact'
+      preLoaderRoute: typeof mainPagesLayoutContactRouteImport
+      parentRoute: typeof mainPagesLayoutRouteRoute
+    }
+    '/(main)/pages/_layout/about': {
+      id: '/(main)/pages/_layout/about'
+      path: '/about'
+      fullPath: '/pages/about'
+      preLoaderRoute: typeof mainPagesLayoutAboutRouteImport
+      parentRoute: typeof mainPagesLayoutRouteRoute
     }
     '/(main)/dashboard/onboardings/profile': {
       id: '/(main)/dashboard/onboardings/profile'
@@ -339,35 +375,58 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface mainPagesLayoutRouteRouteChildren {
+  mainPagesLayoutAboutRoute: typeof mainPagesLayoutAboutRoute
+  mainPagesLayoutContactRoute: typeof mainPagesLayoutContactRoute
+  mainPagesLayoutHelpRoute: typeof mainPagesLayoutHelpRoute
+  mainPagesLayoutPrivacyPolicyRoute: typeof mainPagesLayoutPrivacyPolicyRoute
+  mainPagesLayoutTermsOfServiceRoute: typeof mainPagesLayoutTermsOfServiceRoute
+}
+
+const mainPagesLayoutRouteRouteChildren: mainPagesLayoutRouteRouteChildren = {
+  mainPagesLayoutAboutRoute: mainPagesLayoutAboutRoute,
+  mainPagesLayoutContactRoute: mainPagesLayoutContactRoute,
+  mainPagesLayoutHelpRoute: mainPagesLayoutHelpRoute,
+  mainPagesLayoutPrivacyPolicyRoute: mainPagesLayoutPrivacyPolicyRoute,
+  mainPagesLayoutTermsOfServiceRoute: mainPagesLayoutTermsOfServiceRoute,
+}
+
+const mainPagesLayoutRouteRouteWithChildren =
+  mainPagesLayoutRouteRoute._addFileChildren(mainPagesLayoutRouteRouteChildren)
+
+interface mainPagesRouteChildren {
+  mainPagesLayoutRouteRoute: typeof mainPagesLayoutRouteRouteWithChildren
+  mainPagesIndexRoute: typeof mainPagesIndexRoute
+}
+
+const mainPagesRouteChildren: mainPagesRouteChildren = {
+  mainPagesLayoutRouteRoute: mainPagesLayoutRouteRouteWithChildren,
+  mainPagesIndexRoute: mainPagesIndexRoute,
+}
+
+const mainPagesRouteWithChildren = mainPagesRoute._addFileChildren(
+  mainPagesRouteChildren,
+)
+
 interface mainRouteRouteChildren {
+  mainPagesRoute: typeof mainPagesRouteWithChildren
   mainAuthenticationMagicRoute: typeof mainAuthenticationMagicRoute
   mainDashboardPaymentRoute: typeof mainDashboardPaymentRoute
   mainDashboardSubscribeRoute: typeof mainDashboardSubscribeRoute
   mainDashboardWhatsappRoute: typeof mainDashboardWhatsappRoute
-  mainPagesAboutRoute: typeof mainPagesAboutRoute
-  mainPagesContactRoute: typeof mainPagesContactRoute
-  mainPagesHelpRoute: typeof mainPagesHelpRoute
-  mainPagesPrivacyPolicyRoute: typeof mainPagesPrivacyPolicyRoute
-  mainPagesTermsOfServiceRoute: typeof mainPagesTermsOfServiceRoute
   mainDashboardIndexRoute: typeof mainDashboardIndexRoute
-  mainPagesIndexRoute: typeof mainPagesIndexRoute
   mainDashboardOnboardingsAgentRoute: typeof mainDashboardOnboardingsAgentRoute
   mainDashboardOnboardingsProfileRoute: typeof mainDashboardOnboardingsProfileRoute
   mainDashboardOnboardingsIndexRoute: typeof mainDashboardOnboardingsIndexRoute
 }
 
 const mainRouteRouteChildren: mainRouteRouteChildren = {
+  mainPagesRoute: mainPagesRouteWithChildren,
   mainAuthenticationMagicRoute: mainAuthenticationMagicRoute,
   mainDashboardPaymentRoute: mainDashboardPaymentRoute,
   mainDashboardSubscribeRoute: mainDashboardSubscribeRoute,
   mainDashboardWhatsappRoute: mainDashboardWhatsappRoute,
-  mainPagesAboutRoute: mainPagesAboutRoute,
-  mainPagesContactRoute: mainPagesContactRoute,
-  mainPagesHelpRoute: mainPagesHelpRoute,
-  mainPagesPrivacyPolicyRoute: mainPagesPrivacyPolicyRoute,
-  mainPagesTermsOfServiceRoute: mainPagesTermsOfServiceRoute,
   mainDashboardIndexRoute: mainDashboardIndexRoute,
-  mainPagesIndexRoute: mainPagesIndexRoute,
   mainDashboardOnboardingsAgentRoute: mainDashboardOnboardingsAgentRoute,
   mainDashboardOnboardingsProfileRoute: mainDashboardOnboardingsProfileRoute,
   mainDashboardOnboardingsIndexRoute: mainDashboardOnboardingsIndexRoute,

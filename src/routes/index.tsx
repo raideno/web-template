@@ -45,10 +45,16 @@ export const Route = createFileRoute('/')({
               wrap="wrap"
             >
               <Flex direction="column" gap="3" flexGrow="1">
-                <Heading size="8">An Assistant always by your side</Heading>
+                <Heading size="8">Lorem Ipsum Dolor Sit Amet</Heading>
                 <Text size="4" color="gray">
-                  Get instant help, ideas and answers through a conversational
-                  assistant that remembers context and works directly inside of{' '}
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                  irure dolor in reprehenderit in voluptate velit esse cillum
+                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                  cupidatat non proident, sunt in culpa qui officia deserunt
+                  mollit anim id est laborum. Works directly inside of{' '}
                   <Tooltip content={'WhatsApp'} side="bottom" delayDuration={0}>
                     <Text align={'center'}>
                       <WhatsappIcon />
@@ -68,10 +74,11 @@ export const Route = createFileRoute('/')({
                   <Button variant="classic" size="4" className="w-full!">
                     <Authenticated>
                       <ChatBubbleIcon width={18} height={18} />
-                      Dashboard
+                      Lorem Ipsum
                     </Authenticated>
                     <Unauthenticated>
-                      <ChatBubbleIcon width={18} height={18} />+ (0) 123 xxx xxx
+                      <ChatBubbleIcon width={18} height={18} />
+                      Lorem Ipsum Dolor
                     </Unauthenticated>
                   </Button>
                 </Link>
@@ -87,8 +94,8 @@ export const Route = createFileRoute('/')({
                   >
                     <iframe
                       className="absolute top-0 left-0 w-full h-full rounded-md"
-                      src="https://www.youtube.com/embed/KgMyUtphV40"
-                      title="How It Works Demo"
+                      src="https://www.youtube.com/embed/abcdefgh"
+                      title="Lorem Ipsum Video"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                     />
@@ -100,23 +107,24 @@ export const Route = createFileRoute('/')({
 
           <Grid columns={{ initial: '1', sm: '3' }} gap="4">
             <Card>
-              <Heading size="4">Context Memory</Heading>
+              <Heading size="4">Lorem Ipsum</Heading>
               <Text color="gray" size="2">
-                Conversations stay relevant over time so you don't repeat
-                yourself.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua.
               </Text>
             </Card>
             <Card>
-              <Heading size="4">Scheduled Messages</Heading>
+              <Heading size="4">Dolor Sit Amet</Heading>
               <Text color="gray" size="2">
-                Set up automated messages to be sent at specific times or
-                intervals.
+                Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                laboris nisi ut aliquip ex ea commodo consequat.
               </Text>
             </Card>
             <Card>
-              <Heading size="4">Customizable</Heading>
+              <Heading size="4">Consectetur Adipiscing</Heading>
               <Text color="gray" size="2">
-                Tailor the assistant's behavior to suit your unique needs.
+                Duis aute irure dolor in reprehenderit in voluptate velit esse
+                cillum dolore eu fugiat nulla pariatur.
               </Text>
             </Card>
           </Grid>

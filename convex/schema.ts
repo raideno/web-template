@@ -3,9 +3,10 @@ import { analyticsTables } from '@raideno/convex-analytics/server'
 import { stripeTables } from '@raideno/convex-stripe/server'
 import { defineSchema } from 'convex/server'
 
-import { CountersTable } from '@/convex/models/quotas'
 import { FeedbacksTable } from '@/convex/models/feedbacks'
+import { MagicsTable } from '@/convex/models/magics'
 import { OnboardingsTable } from '@/convex/models/onboardings'
+import { CountersTable } from '@/convex/models/quotas'
 import { UsersTable } from '@/convex/models/users'
 
 export default defineSchema({
@@ -28,4 +29,8 @@ export default defineSchema({
    *  User feedbacks and ratings.
    */
   feedbacks: FeedbacksTable(),
+  /**
+   * Magic authentication links.
+   */
+  magics: MagicsTable(),
 })

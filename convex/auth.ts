@@ -1,13 +1,24 @@
-import { Password } from "@convex-dev/auth/providers/Password";
-import { convexAuth, getAuthUserId } from '@convex-dev/auth/server';
-import { v } from 'convex/values';
+import { Phone } from '@convex-dev/auth/providers/Phone'
+import { convexAuth, getAuthUserId } from '@convex-dev/auth/server'
+import { v } from 'convex/values'
+import { alphabet, generateRandomString } from 'oslo/crypto'
 
 import type {
-  PhoneConfig
-} from '@convex-dev/auth/server';
+  GenericActionCtxWithAuthConfig,
+  PhoneConfig,
+} from '@convex-dev/auth/server'
 
-import { internal } from '@/convex.generated/api';
-import { internalQuery, mutation, query } from '@/convex.generated/server';
+import type { DataModel } from '@/convex.generated/dataModel'
+
+import { internal } from '@/convex.generated/api'
+import { internalQuery, mutation, query } from '@/convex.generated/server'
+
+import {
+  AUTH_CODE_MAX_AGE_IN_SECONDS,
+  AUTH_PROVIDER_NAME,
+  AUTH_VERIFICATION_CODE_LENGTH,
+  IS_PRODUCTION,
+} from '@/convex/parameters'
 
 interface Params {
   identifier: string
@@ -17,10 +28,34 @@ interface Params {
   token: string
 }
 
+const sendVerificationRequestConsole = async (
+  params: Params,
+  _: GenericActionCtxWithAuthConfig<DataModel>,
+) => {
+  console.log('[params.token]:', params.token)
+}
+const sendVerificationRequestTwilio = async (
+  params: Params,
+  context: GenericActionCtxWithAuthConfig<DataModel>,
+) => {
+  throw new Error('Not implemented.')
+}
 
 export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
   providers: [
-    Password,
+    Phone({
+      id: AUTH_PROVIDER_NAME,
+      maxAge: AUTH_CODE_MAX_AGE_IN_SECONDS,
+      generateVerificationToken: async () =>
+        await generateRandomString(
+          AUTH_VERIFICATION_CODE_LENGTH,
+          alphabet('0-9'),
+        ),
+      sendVerificationRequest: IS_PRODUCTION
+        ? sendVerificationRequestTwilio
+        : sendVerificationRequestConsole,
+      apiKey: '',
+    }),
   ],
   callbacks: {
     afterUserCreatedOrUpdated: async (context, args) => {
