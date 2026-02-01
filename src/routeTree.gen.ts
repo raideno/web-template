@@ -13,6 +13,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as mainRouteRouteImport } from './routes/(main)/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as mainDashboardRouteRouteImport } from './routes/(main)/dashboard/route'
 import { Route as mainPagesIndexRouteImport } from './routes/(main)/pages/index'
 import { Route as mainDashboardIndexRouteImport } from './routes/(main)/dashboard/index'
 import { Route as mainDashboardSubscribeRouteImport } from './routes/(main)/dashboard/subscribe'
@@ -43,25 +44,30 @@ const mainPagesRoute = mainPagesRouteImport.update({
   path: '/pages',
   getParentRoute: () => mainRouteRoute,
 } as any)
+const mainDashboardRouteRoute = mainDashboardRouteRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => mainRouteRoute,
+} as any)
 const mainPagesIndexRoute = mainPagesIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => mainPagesRoute,
 } as any)
 const mainDashboardIndexRoute = mainDashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => mainRouteRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => mainDashboardRouteRoute,
 } as any)
 const mainDashboardSubscribeRoute = mainDashboardSubscribeRouteImport.update({
-  id: '/dashboard/subscribe',
-  path: '/dashboard/subscribe',
-  getParentRoute: () => mainRouteRoute,
+  id: '/subscribe',
+  path: '/subscribe',
+  getParentRoute: () => mainDashboardRouteRoute,
 } as any)
 const mainDashboardPaymentRoute = mainDashboardPaymentRouteImport.update({
-  id: '/dashboard/payment',
-  path: '/dashboard/payment',
-  getParentRoute: () => mainRouteRoute,
+  id: '/payment',
+  path: '/payment',
+  getParentRoute: () => mainDashboardRouteRoute,
 } as any)
 const mainAuthenticationMagicRoute = mainAuthenticationMagicRouteImport.update({
   id: '/authentication/magic',
@@ -74,9 +80,9 @@ const mainPagesLayoutRouteRoute = mainPagesLayoutRouteRouteImport.update({
 } as any)
 const mainDashboardOnboardingsIndexRoute =
   mainDashboardOnboardingsIndexRouteImport.update({
-    id: '/dashboard/onboardings/',
-    path: '/dashboard/onboardings/',
-    getParentRoute: () => mainRouteRoute,
+    id: '/onboardings/',
+    path: '/onboardings/',
+    getParentRoute: () => mainDashboardRouteRoute,
   } as any)
 const mainPagesLayoutTermsOfServiceRoute =
   mainPagesLayoutTermsOfServiceRouteImport.update({
@@ -107,18 +113,19 @@ const mainPagesLayoutAboutRoute = mainPagesLayoutAboutRouteImport.update({
 } as any)
 const mainDashboardOnboardingsProfileRoute =
   mainDashboardOnboardingsProfileRouteImport.update({
-    id: '/dashboard/onboardings/profile',
-    path: '/dashboard/onboardings/profile',
-    getParentRoute: () => mainRouteRoute,
+    id: '/onboardings/profile',
+    path: '/onboardings/profile',
+    getParentRoute: () => mainDashboardRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof mainDashboardRouteRouteWithChildren
   '/pages': typeof mainPagesLayoutRouteRouteWithChildren
   '/authentication/magic': typeof mainAuthenticationMagicRoute
   '/dashboard/payment': typeof mainDashboardPaymentRoute
   '/dashboard/subscribe': typeof mainDashboardSubscribeRoute
-  '/dashboard': typeof mainDashboardIndexRoute
+  '/dashboard/': typeof mainDashboardIndexRoute
   '/pages/': typeof mainPagesIndexRoute
   '/dashboard/onboardings/profile': typeof mainDashboardOnboardingsProfileRoute
   '/pages/about': typeof mainPagesLayoutAboutRoute
@@ -147,6 +154,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/(main)': typeof mainRouteRouteWithChildren
+  '/(main)/dashboard': typeof mainDashboardRouteRouteWithChildren
   '/(main)/pages': typeof mainPagesRouteWithChildren
   '/(main)/pages/_layout': typeof mainPagesLayoutRouteRouteWithChildren
   '/(main)/authentication/magic': typeof mainAuthenticationMagicRoute
@@ -166,11 +174,12 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/dashboard'
     | '/pages'
     | '/authentication/magic'
     | '/dashboard/payment'
     | '/dashboard/subscribe'
-    | '/dashboard'
+    | '/dashboard/'
     | '/pages/'
     | '/dashboard/onboardings/profile'
     | '/pages/about'
@@ -198,6 +207,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/(main)'
+    | '/(main)/dashboard'
     | '/(main)/pages'
     | '/(main)/pages/_layout'
     | '/(main)/authentication/magic'
@@ -242,6 +252,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof mainPagesRouteImport
       parentRoute: typeof mainRouteRoute
     }
+    '/(main)/dashboard': {
+      id: '/(main)/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof mainDashboardRouteRouteImport
+      parentRoute: typeof mainRouteRoute
+    }
     '/(main)/pages/': {
       id: '/(main)/pages/'
       path: '/'
@@ -251,24 +268,24 @@ declare module '@tanstack/react-router' {
     }
     '/(main)/dashboard/': {
       id: '/(main)/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard'
+      path: '/'
+      fullPath: '/dashboard/'
       preLoaderRoute: typeof mainDashboardIndexRouteImport
-      parentRoute: typeof mainRouteRoute
+      parentRoute: typeof mainDashboardRouteRoute
     }
     '/(main)/dashboard/subscribe': {
       id: '/(main)/dashboard/subscribe'
-      path: '/dashboard/subscribe'
+      path: '/subscribe'
       fullPath: '/dashboard/subscribe'
       preLoaderRoute: typeof mainDashboardSubscribeRouteImport
-      parentRoute: typeof mainRouteRoute
+      parentRoute: typeof mainDashboardRouteRoute
     }
     '/(main)/dashboard/payment': {
       id: '/(main)/dashboard/payment'
-      path: '/dashboard/payment'
+      path: '/payment'
       fullPath: '/dashboard/payment'
       preLoaderRoute: typeof mainDashboardPaymentRouteImport
-      parentRoute: typeof mainRouteRoute
+      parentRoute: typeof mainDashboardRouteRoute
     }
     '/(main)/authentication/magic': {
       id: '/(main)/authentication/magic'
@@ -286,10 +303,10 @@ declare module '@tanstack/react-router' {
     }
     '/(main)/dashboard/onboardings/': {
       id: '/(main)/dashboard/onboardings/'
-      path: '/dashboard/onboardings'
+      path: '/onboardings'
       fullPath: '/dashboard/onboardings'
       preLoaderRoute: typeof mainDashboardOnboardingsIndexRouteImport
-      parentRoute: typeof mainRouteRoute
+      parentRoute: typeof mainDashboardRouteRoute
     }
     '/(main)/pages/_layout/terms-of-service': {
       id: '/(main)/pages/_layout/terms-of-service'
@@ -328,13 +345,32 @@ declare module '@tanstack/react-router' {
     }
     '/(main)/dashboard/onboardings/profile': {
       id: '/(main)/dashboard/onboardings/profile'
-      path: '/dashboard/onboardings/profile'
+      path: '/onboardings/profile'
       fullPath: '/dashboard/onboardings/profile'
       preLoaderRoute: typeof mainDashboardOnboardingsProfileRouteImport
-      parentRoute: typeof mainRouteRoute
+      parentRoute: typeof mainDashboardRouteRoute
     }
   }
 }
+
+interface mainDashboardRouteRouteChildren {
+  mainDashboardPaymentRoute: typeof mainDashboardPaymentRoute
+  mainDashboardSubscribeRoute: typeof mainDashboardSubscribeRoute
+  mainDashboardIndexRoute: typeof mainDashboardIndexRoute
+  mainDashboardOnboardingsProfileRoute: typeof mainDashboardOnboardingsProfileRoute
+  mainDashboardOnboardingsIndexRoute: typeof mainDashboardOnboardingsIndexRoute
+}
+
+const mainDashboardRouteRouteChildren: mainDashboardRouteRouteChildren = {
+  mainDashboardPaymentRoute: mainDashboardPaymentRoute,
+  mainDashboardSubscribeRoute: mainDashboardSubscribeRoute,
+  mainDashboardIndexRoute: mainDashboardIndexRoute,
+  mainDashboardOnboardingsProfileRoute: mainDashboardOnboardingsProfileRoute,
+  mainDashboardOnboardingsIndexRoute: mainDashboardOnboardingsIndexRoute,
+}
+
+const mainDashboardRouteRouteWithChildren =
+  mainDashboardRouteRoute._addFileChildren(mainDashboardRouteRouteChildren)
 
 interface mainPagesLayoutRouteRouteChildren {
   mainPagesLayoutAboutRoute: typeof mainPagesLayoutAboutRoute
@@ -370,23 +406,15 @@ const mainPagesRouteWithChildren = mainPagesRoute._addFileChildren(
 )
 
 interface mainRouteRouteChildren {
+  mainDashboardRouteRoute: typeof mainDashboardRouteRouteWithChildren
   mainPagesRoute: typeof mainPagesRouteWithChildren
   mainAuthenticationMagicRoute: typeof mainAuthenticationMagicRoute
-  mainDashboardPaymentRoute: typeof mainDashboardPaymentRoute
-  mainDashboardSubscribeRoute: typeof mainDashboardSubscribeRoute
-  mainDashboardIndexRoute: typeof mainDashboardIndexRoute
-  mainDashboardOnboardingsProfileRoute: typeof mainDashboardOnboardingsProfileRoute
-  mainDashboardOnboardingsIndexRoute: typeof mainDashboardOnboardingsIndexRoute
 }
 
 const mainRouteRouteChildren: mainRouteRouteChildren = {
+  mainDashboardRouteRoute: mainDashboardRouteRouteWithChildren,
   mainPagesRoute: mainPagesRouteWithChildren,
   mainAuthenticationMagicRoute: mainAuthenticationMagicRoute,
-  mainDashboardPaymentRoute: mainDashboardPaymentRoute,
-  mainDashboardSubscribeRoute: mainDashboardSubscribeRoute,
-  mainDashboardIndexRoute: mainDashboardIndexRoute,
-  mainDashboardOnboardingsProfileRoute: mainDashboardOnboardingsProfileRoute,
-  mainDashboardOnboardingsIndexRoute: mainDashboardOnboardingsIndexRoute,
 }
 
 const mainRouteRouteWithChildren = mainRouteRoute._addFileChildren(

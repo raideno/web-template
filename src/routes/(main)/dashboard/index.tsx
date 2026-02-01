@@ -22,9 +22,6 @@ import {
   SUBSCRIPTION_RETURN_SEARCH_PARAM_NAME,
   SUBSCRIPTION_RETURN_SEARCH_PARAM_ZOD_VALIDATOR,
 } from '@/constants/search'
-import { loadUserContext } from '@/contexts/tanstack/user'
-import { loadSubscriptionContext } from '@/contexts/tanstack/subscription'
-import { loadOnboardingsContext } from '@/contexts/tanstack/onboardings'
 
 export const Route = createFileRoute('/(main)/dashboard/')({
   validateSearch: z.object({
@@ -33,21 +30,7 @@ export const Route = createFileRoute('/(main)/dashboard/')({
     [SUBSCRIPTION_RETURN_SEARCH_PARAM_NAME]:
       SUBSCRIPTION_RETURN_SEARCH_PARAM_ZOD_VALIDATOR,
   }),
-  beforeLoad: async () => {
-    // TODO: make the context only in the concerned routes to not slowdown the whole thing
-    const [userContext, subscriptionContext, onboardingsContext] =
-      await Promise.all([
-        loadUserContext(),
-        loadSubscriptionContext(),
-        loadOnboardingsContext(),
-      ])
-
-    const context = {
-      user: userContext,
-      subscription: subscriptionContext,
-      onboardings: onboardingsContext,
-    }
-
+  beforeLoad: ({ context }) => {
     if (!context.user.isAuthenticated || !context.user.user)
       throw redirect({
         to: '/',
@@ -71,8 +54,6 @@ export const Route = createFileRoute('/(main)/dashboard/')({
         if (to) throw redirect({ to })
       }
     }
-
-    return context
   },
   search: {
     middlewares: [
