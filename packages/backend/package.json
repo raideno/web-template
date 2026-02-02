@@ -1,0 +1,39 @@
+{
+    "name": "backend",
+    "private": true,
+    "sideEffects": false,
+    "type": "module",
+    "version": "0.0.25",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        "./convex/api": "./src/_generated/api.js",
+        "./convex/server": "./src/_generated/server.js",
+        "./convex/dataModel": "./src/_generated/dataModel.d.ts"
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "dev": "npx convex dev",
+        "dev:push-env": "./scripts/setup-convex-env.sh push .env.local --environment development",
+        "dev:pull-env": "./scripts/setup-convex-env.sh pull .env.local --environment development",
+        "prod:push-env": "./scripts/setup-convex-env.sh push .env.local --environment production",
+        "prod:pull-env": "./scripts/setup-convex-env.sh pull .env.local --environment production"
+    },
+    "dependencies": {
+        "@convex-dev/auth": "^0.0.90",
+        "@convex-dev/rate-limiter": "^0.3.0",
+        "@convex-dev/react-query": "^0.0.0-alpha.11",
+        "@raideno/convex-analytics": "^0.0.2",
+        "@raideno/convex-stripe": "^0.1.20",
+        "convex": "^1.29.1",
+        "convex-helpers": "^0.1.105",
+        "oslo": "^1.2.1",
+        "zod": "^4.1.12"
+    },
+    "devDependencies": {
+        "@types/node": "^24.10.0",
+        "typescript": "^5.9.2"
+    }
+}
