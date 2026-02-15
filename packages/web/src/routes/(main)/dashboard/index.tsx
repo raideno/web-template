@@ -1,19 +1,19 @@
-import { Container, Flex } from '@radix-ui/themes'
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import z from 'zod'
+import { Container, Flex } from "@radix-ui/themes";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import z from "zod";
 
-import { AccountCard } from './-components/account-card'
-import { DeveloperCard } from './-components/developer-card'
-import { FeedbackCard } from './-components/feedback-card'
-import { OnboardingsCard } from './-components/onboardings-card'
-import { SubscribeDialog } from './-components/subscribe-dialog'
-import { SubscriptionCard } from './-components/subscription-card'
-import { SubscriptionSuccessDialog } from './-components/subscription-success-dialog'
+import { AccountCard } from "./-components/account-card";
+import { DeveloperCard } from "./-components/developer-card";
+import { FeedbackCard } from "./-components/feedback-card";
+import { OnboardingsCard } from "./-components/onboardings-card";
+import { SubscribeDialog } from "./-components/subscribe-dialog";
+import { SubscriptionCard } from "./-components/subscription-card";
+import { SubscriptionSuccessDialog } from "./-components/subscription-success-dialog";
 
 import {
   PageHeaderCard,
   PageHeaderCardSkeleton,
-} from '@/components/layout/page-header-card'
+} from "@/components/layout/page-header-card";
 import {
   COME_BACK_FROM_REDIRECT_SEARCH_PARAM_NAME,
   COME_BACK_FROM_REDIRECT_SEARCH_PARAM_ZOD_VALIDATOR,
@@ -21,9 +21,9 @@ import {
   REQUIRE_AUTHENTICATION_SEARCH_PARAM_NAME,
   SUBSCRIPTION_RETURN_SEARCH_PARAM_NAME,
   SUBSCRIPTION_RETURN_SEARCH_PARAM_ZOD_VALIDATOR,
-} from '@/constants/search'
+} from "@/constants/search";
 
-export const Route = createFileRoute('/(main)/dashboard/')({
+export const Route = createFileRoute("/(main)/dashboard/")({
   validateSearch: z.object({
     [COME_BACK_FROM_REDIRECT_SEARCH_PARAM_NAME]:
       COME_BACK_FROM_REDIRECT_SEARCH_PARAM_ZOD_VALIDATOR,
@@ -33,36 +33,36 @@ export const Route = createFileRoute('/(main)/dashboard/')({
   beforeLoad: ({ context }) => {
     if (!context.user.isAuthenticated || !context.user.user)
       throw redirect({
-        to: '/',
+        to: "/",
         search: {
           [REQUIRE_AUTHENTICATION_SEARCH_PARAM_NAME]: true,
-          [REDIRECT_TO_SEARCH_PARAM_NAME]: '/dashboard',
+          [REDIRECT_TO_SEARCH_PARAM_NAME]: "/dashboard",
         },
-      })
+      });
 
-    const onboardings = context.onboardings.onboardings
+    const onboardings = context.onboardings.onboardings;
     if (onboardings) {
       const pending = onboardings.find(
         (o) => o.required && (!o.completed || o.outdated),
-      )
+      );
       if (pending) {
         const pathMap: Record<string, string> = {
-          agent: '/dashboard/onboardings/agent',
-          profile: '/dashboard/onboardings/profile',
-        }
-        const to = pathMap[pending.id]
-        if (to) throw redirect({ to })
+          agent: "/dashboard/onboardings/agent",
+          profile: "/dashboard/onboardings/profile",
+        };
+        const to = pathMap[pending.id];
+        if (to) throw redirect({ to });
       }
     }
   },
   search: {
     middlewares: [
       ({ search, next }) => {
-        const result = next(search)
+        const result = next(search);
         return {
           ...result,
           [COME_BACK_FROM_REDIRECT_SEARCH_PARAM_NAME]: undefined,
-        }
+        };
       },
     ],
   },
@@ -73,36 +73,34 @@ export const Route = createFileRoute('/(main)/dashboard/')({
           <PageHeaderCardSkeleton />
         </Flex>
       </Container>
-    )
+    );
   },
   component: () => {
-    const context = Route.useRouteContext()
-    const search = Route.useSearch()
+    const context = Route.useRouteContext();
+    const search = Route.useSearch();
 
-    const navigate = Route.useNavigate()
+    const navigate = Route.useNavigate();
 
-    const user = context.user.user!
-    const subscription = context.subscription.subscription
+    const user = context.user.user!;
+    const subscription = context.subscription.subscription;
 
-    const isSubscribed = subscription?.status === 'active'
+    const isSubscribed = subscription?.status === "active";
 
     const showSubscriptionSuccessDialog =
-      search[SUBSCRIPTION_RETURN_SEARCH_PARAM_NAME] === 'success' &&
-      isSubscribed
+      search[SUBSCRIPTION_RETURN_SEARCH_PARAM_NAME] === "success" &&
+      isSubscribed;
 
     const handleSuccessDialogOpenChange = (open: boolean) => {
       if (!open && search[SUBSCRIPTION_RETURN_SEARCH_PARAM_NAME]) {
         navigate({
-          to: '/dashboard',
+          to: "/dashboard",
           search: (old) => ({
             ...old,
             [SUBSCRIPTION_RETURN_SEARCH_PARAM_NAME]: undefined,
           }),
-        })
+        });
       }
-    }
-
-    console.log('[isSubscribed]', isSubscribed, subscription)
+    };
 
     return (
       <Container size="4">
@@ -133,6 +131,6 @@ export const Route = createFileRoute('/(main)/dashboard/')({
           {user.developer && <DeveloperCard user={user} />}
         </Flex>
       </Container>
-    )
+    );
   },
-})
+});

@@ -1,26 +1,27 @@
-import { Box, Button, Card, Flex, Text } from '@radix-ui/themes'
-import { Link } from '@tanstack/react-router'
+import { name } from "@/constants/parameters";
+import { Box, Button, Card, Flex, Text } from "@radix-ui/themes";
+import { Link } from "@tanstack/react-router";
 
 export interface FooterProps {}
 
 export const Footer: React.FC<FooterProps> = () => {
-  const year = new Date().getFullYear()
+  const year = new Date().getFullYear();
 
   return (
     <Card className="p-0!">
       <Box p="4">
-        <Flex direction="column" gap={'1'} align="center">
+        <Flex direction="column" gap={"1"} align="center">
           <Box>
-            <Text size={'2'} color="gray">
-              © {year} closeby.tel. All rights reserved.
+            <Text size={"2"} color="gray">
+              © {year} {name}. All rights reserved.
             </Text>
           </Box>
 
           <Box>
-            <Flex gap={'2'} justify="center">
-              <Link to="/pages/contact">
+            <Flex gap={"2"} justify="center">
+              <Link to="/pages/$slug" params={{ slug: "contact" }}>
                 <Button
-                  size={'1'}
+                  size={"1"}
                   variant="outline"
                   className="line-clamp-1"
                   color="gray"
@@ -28,9 +29,9 @@ export const Footer: React.FC<FooterProps> = () => {
                   Contact
                 </Button>
               </Link>
-              <Link to="/pages/about">
+              <Link to="/pages/$slug" params={{ slug: "about" }}>
                 <Button
-                  size={'1'}
+                  size={"1"}
                   variant="outline"
                   className="line-clamp-1"
                   color="gray"
@@ -38,9 +39,9 @@ export const Footer: React.FC<FooterProps> = () => {
                   About
                 </Button>
               </Link>
-              <Link to="/pages/terms-of-service">
+              <Link to="/pages/$slug" params={{ slug: "terms-of-service" }}>
                 <Button
-                  size={'1'}
+                  size={"1"}
                   variant="outline"
                   className="line-clamp-1"
                   color="gray"
@@ -48,9 +49,9 @@ export const Footer: React.FC<FooterProps> = () => {
                   Terms
                 </Button>
               </Link>
-              <Link to="/pages/privacy-policy">
+              <Link to="/pages/$slug" params={{ slug: "privacy-policy" }}>
                 <Button
-                  size={'1'}
+                  size={"1"}
                   variant="outline"
                   className="line-clamp-1"
                   color="gray"
@@ -63,5 +64,5 @@ export const Footer: React.FC<FooterProps> = () => {
         </Flex>
       </Box>
     </Card>
-  )
-}
+  );
+};

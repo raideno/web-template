@@ -20,6 +20,7 @@ import {
   SUBSCRIPTION_SUCCESS_REDIRECT_URL,
 } from "@/constants/redirect";
 import { api } from "backend/convex/api";
+import { ACCENT_COLOR } from "@/contexts/react/theme";
 
 export interface SubscribeDialogProps {
   open: boolean;
@@ -27,6 +28,11 @@ export interface SubscribeDialogProps {
 
 export const SubscribeDialog: React.FC<SubscribeDialogProps> = ({ open }) => {
   const { data: products } = useQuery(convexQuery(api.stripe.products, {}));
+  const hasAvailableSubscriptionPlan =
+    products?.some(
+      (product: any) =>
+        Array.isArray(product.prices) && product.prices.length > 0,
+    ) ?? false;
 
   const subscribe = useAction(api.stripe.subscribe);
 
@@ -55,7 +61,59 @@ export const SubscribeDialog: React.FC<SubscribeDialogProps> = ({ open }) => {
     }
   };
 
-  if (products === undefined || products.length === 0) return null;
+  if (products !== undefined && !hasAvailableSubscriptionPlan) {
+    return (
+      <Dialog.Root open={open}>
+        <Dialog.Content>
+          <Box mb="4">
+            <>
+              <Dialog.Title className="sr-only">
+                Subscription unavailable
+              </Dialog.Title>
+              <Dialog.Description className="sr-only">
+                We could not find any active subscription plan right now. This
+                is usually temporary while billing is being configured. Please
+                try again shortly.
+              </Dialog.Description>
+            </>
+            <Heading>Subscription unavailable</Heading>
+            <Text>
+              We could not find any active subscription plan right now. This is
+              usually temporary while billing is being configured. Please try
+              again shortly.
+            </Text>
+          </Box>
+
+          <Box mt="4">
+            <Flex align="center" justify="center">
+              <Link to="/">
+                <Button color="gray" variant="ghost" className="m-0!">
+                  Go back Home
+                </Button>
+              </Link>
+              <Button
+                color="gray"
+                variant="ghost"
+                className="m-0!"
+                onClick={async () => {
+                  await context.authentication.signOut();
+
+                  router.navigate({
+                    to: "/",
+                    reloadDocument: true,
+                  });
+                }}
+              >
+                Logout
+              </Button>
+            </Flex>
+          </Box>
+        </Dialog.Content>
+      </Dialog.Root>
+    );
+  }
+
+  if (products === undefined) return null;
 
   return (
     <Dialog.Root open={open}>
@@ -77,7 +135,7 @@ export const SubscribeDialog: React.FC<SubscribeDialogProps> = ({ open }) => {
 
         <Grid columns={{ initial: "1", sm: "1", lg: "1" }} gap="4">
           {products.map((product: any) =>
-            product.prices.map((price: any) => (
+            (product.prices ?? []).map((price: any) => (
               <Card key={price.priceId} size="3">
                 <Flex direction="column" gap="4">
                   <Box>
@@ -99,7 +157,7 @@ export const SubscribeDialog: React.FC<SubscribeDialogProps> = ({ open }) => {
                       {product.stripe.marketing_features.map(
                         (f: any, i: number) => (
                           <Flex key={i} gap="2" align="center">
-                            <CheckIcon color="green" />
+                            <CheckIcon color={ACCENT_COLOR} />
                             <Text size="2">{f.name}</Text>
                           </Flex>
                         ),

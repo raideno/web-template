@@ -1,50 +1,25 @@
-import {
-  Outlet,
-  createFileRoute,
-  useLocation,
-  useRouter,
-} from '@tanstack/react-router'
-import { MDXProvider } from '@mdx-js/react'
-import { Box, Card, Container, Flex } from '@radix-ui/themes'
+import { Outlet, createFileRoute, useLocation } from "@tanstack/react-router";
+import { MDXProvider } from "@mdx-js/react";
+import { Box, Card, Container, Flex } from "@radix-ui/themes";
 
-import { PageHeaderCard } from '@/components/layout/page-header-card'
+import { PageHeaderCard } from "@/components/layout/page-header-card";
+import { staticPagesBySlug } from "./registry";
 
-export const Route = createFileRoute('/(main)/pages/_layout')({
+export const Route = createFileRoute("/(main)/pages/_layout")({
   component: () => {
-    const router = useRouter()
+    const location = useLocation();
 
-    const location = useLocation()
+    const slug = location.pathname.split("/").filter(Boolean).at(-1);
 
-    const pages = Object.entries(router.routesByPath)
-      .filter(([path, _]) => path === location.href)
-      .filter(([_, route]) => 'head' in route.options)
-      .map(([path, route]) => {
-        const metadata = Object.fromEntries(
-          route.options
-            .head()
-            .meta.map(
-              (
-                meta: React.DetailedHTMLProps<
-                  React.MetaHTMLAttributes<HTMLMetaElement>,
-                  HTMLMetaElement
-                >,
-              ) => [meta.name, meta.content],
-            ),
-        )
-        return {
-          to: path,
-          title: metadata.title,
-          description: metadata.description,
-        }
-      })
-
-    const page = pages.length === 1 ? pages[0] : { title: '', description: '' }
+    const page = slug ? staticPagesBySlug[slug] : undefined;
 
     return (
-      <Container size={'4'}>
+      <Container size={"4"}>
         <Flex direction="column" gap="4">
-          {/* TODO: fetch the page title, etc somehow */}
-          <PageHeaderCard title={page.title} description={page.description} />
+          <PageHeaderCard
+            title={page?.title ?? ""}
+            description={page?.description ?? ""}
+          />
           <Card size="4" className="p-0!">
             <Box p="4">
               <MDXProvider>
@@ -56,6 +31,6 @@ export const Route = createFileRoute('/(main)/pages/_layout')({
           </Card>
         </Flex>
       </Container>
-    )
+    );
   },
-})
+});

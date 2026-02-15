@@ -1,4 +1,4 @@
-import { ChatBubbleIcon } from '@radix-ui/react-icons'
+import { ChatBubbleIcon } from "@radix-ui/react-icons";
 import {
   Box,
   Button,
@@ -8,23 +8,20 @@ import {
   Grid,
   Heading,
   Text,
-  Tooltip,
-} from '@radix-ui/themes'
-import { Link, createFileRoute } from '@tanstack/react-router'
-import { Authenticated, Unauthenticated } from 'convex/react'
-import z from 'zod'
+} from "@radix-ui/themes";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { Authenticated, Unauthenticated } from "convex/react";
+import z from "zod";
 
-import { SmsIcon } from '@/components/icons/sms'
-import { WhatsappIcon } from '@/components/icons/whatsapp'
-import { AuthDialog } from '@/components/layout/auth-dialog'
+import { AuthDialog } from "@/components/layout/auth-dialog";
 import {
   REDIRECT_TO_SEARCH_PARAM_NAME,
   REDIRECT_TO_SEARCH_PARAM_ZOD_VALIDATOR,
   REQUIRE_AUTHENTICATION_SEARCH_PARAM_NAME,
   REQUIRE_AUTHENTICATION_SEARCH_PARAM_ZOD_VALIDATOR,
-} from '@/constants/search'
+} from "@/constants/search";
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
   validateSearch: z.object({
     [REQUIRE_AUTHENTICATION_SEARCH_PARAM_NAME]:
       REQUIRE_AUTHENTICATION_SEARCH_PARAM_ZOD_VALIDATOR,
@@ -32,12 +29,12 @@ export const Route = createFileRoute('/')({
   }),
   component: () => {
     return (
-      <Container size={'4'}>
+      <Container size={"4"}>
         <AuthDialog />
         <Flex direction="column" gap="4">
           <Card size="4" className="p-0!">
             <Flex
-              direction={{ initial: 'column', md: 'row' }}
+              direction={{ initial: "column", md: "row" }}
               gap="6"
               p="4"
               align="center"
@@ -54,20 +51,7 @@ export const Route = createFileRoute('/')({
                   irure dolor in reprehenderit in voluptate velit esse cillum
                   dolore eu fugiat nulla pariatur. Excepteur sint occaecat
                   cupidatat non proident, sunt in culpa qui officia deserunt
-                  mollit anim id est laborum. Works directly inside of{' '}
-                  <Tooltip content={'WhatsApp'} side="bottom" delayDuration={0}>
-                    <Text align={'center'}>
-                      <WhatsappIcon />
-                      <Text weight={'bold'}>WhatsApp</Text>
-                    </Text>
-                  </Tooltip>{' '}
-                  and{' '}
-                  <Tooltip content={'SMS'} side="bottom" delayDuration={0}>
-                    <Text align={'center'}>
-                      <SmsIcon />
-                      <Text weight={'bold'}>SMS</Text>.
-                    </Text>
-                  </Tooltip>
+                  mollit anim id est laborum.
                 </Text>
 
                 <Link to="/dashboard">
@@ -89,7 +73,7 @@ export const Route = createFileRoute('/')({
                   className="relative overflow-hidden h-full w-full p-0!"
                 >
                   <Box
-                    style={{ paddingBottom: '56.25%' }}
+                    style={{ paddingBottom: "56.25%" }}
                     className="relative w-full"
                   >
                     <iframe
@@ -105,7 +89,7 @@ export const Route = createFileRoute('/')({
             </Flex>
           </Card>
 
-          <Grid columns={{ initial: '1', sm: '3' }} gap="4">
+          <Grid columns={{ initial: "1", sm: "3" }} gap="4">
             <Card>
               <Heading size="4">Lorem Ipsum</Heading>
               <Text color="gray" size="2">
@@ -130,6 +114,6 @@ export const Route = createFileRoute('/')({
           </Grid>
         </Flex>
       </Container>
-    )
+    );
   },
-})
+});

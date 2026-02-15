@@ -19,11 +19,7 @@ import { Route as mainDashboardPaymentRouteImport } from './routes/(main)/dashbo
 import { Route as mainAuthenticationMagicRouteImport } from './routes/(main)/authentication/magic'
 import { Route as mainPagesLayoutRouteRouteImport } from './routes/(main)/pages/_layout/route'
 import { Route as mainDashboardOnboardingsIndexRouteImport } from './routes/(main)/dashboard/onboardings/index'
-import { Route as mainPagesLayoutTermsOfServiceRouteImport } from './routes/(main)/pages/_layout/terms-of-service'
-import { Route as mainPagesLayoutPrivacyPolicyRouteImport } from './routes/(main)/pages/_layout/privacy-policy'
-import { Route as mainPagesLayoutHelpRouteImport } from './routes/(main)/pages/_layout/help'
-import { Route as mainPagesLayoutContactRouteImport } from './routes/(main)/pages/_layout/contact'
-import { Route as mainPagesLayoutAboutRouteImport } from './routes/(main)/pages/_layout/about'
+import { Route as mainPagesLayoutSlugRouteImport } from './routes/(main)/pages/_layout/$slug'
 import { Route as mainDashboardOnboardingsProfileRouteImport } from './routes/(main)/dashboard/onboardings/profile'
 
 const mainRouteRoute = mainRouteRouteImport.update({
@@ -76,31 +72,9 @@ const mainDashboardOnboardingsIndexRoute =
     path: '/onboardings/',
     getParentRoute: () => mainDashboardRouteRoute,
   } as any)
-const mainPagesLayoutTermsOfServiceRoute =
-  mainPagesLayoutTermsOfServiceRouteImport.update({
-    id: '/terms-of-service',
-    path: '/terms-of-service',
-    getParentRoute: () => mainPagesLayoutRouteRoute,
-  } as any)
-const mainPagesLayoutPrivacyPolicyRoute =
-  mainPagesLayoutPrivacyPolicyRouteImport.update({
-    id: '/privacy-policy',
-    path: '/privacy-policy',
-    getParentRoute: () => mainPagesLayoutRouteRoute,
-  } as any)
-const mainPagesLayoutHelpRoute = mainPagesLayoutHelpRouteImport.update({
-  id: '/help',
-  path: '/help',
-  getParentRoute: () => mainPagesLayoutRouteRoute,
-} as any)
-const mainPagesLayoutContactRoute = mainPagesLayoutContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => mainPagesLayoutRouteRoute,
-} as any)
-const mainPagesLayoutAboutRoute = mainPagesLayoutAboutRouteImport.update({
-  id: '/about',
-  path: '/about',
+const mainPagesLayoutSlugRoute = mainPagesLayoutSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
   getParentRoute: () => mainPagesLayoutRouteRoute,
 } as any)
 const mainDashboardOnboardingsProfileRoute =
@@ -120,11 +94,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof mainDashboardIndexRoute
   '/pages/': typeof mainPagesIndexRoute
   '/dashboard/onboardings/profile': typeof mainDashboardOnboardingsProfileRoute
-  '/pages/about': typeof mainPagesLayoutAboutRoute
-  '/pages/contact': typeof mainPagesLayoutContactRoute
-  '/pages/help': typeof mainPagesLayoutHelpRoute
-  '/pages/privacy-policy': typeof mainPagesLayoutPrivacyPolicyRoute
-  '/pages/terms-of-service': typeof mainPagesLayoutTermsOfServiceRoute
+  '/pages/$slug': typeof mainPagesLayoutSlugRoute
   '/dashboard/onboardings/': typeof mainDashboardOnboardingsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -135,11 +105,7 @@ export interface FileRoutesByTo {
   '/dashboard/subscribe': typeof mainDashboardSubscribeRoute
   '/dashboard': typeof mainDashboardIndexRoute
   '/dashboard/onboardings/profile': typeof mainDashboardOnboardingsProfileRoute
-  '/pages/about': typeof mainPagesLayoutAboutRoute
-  '/pages/contact': typeof mainPagesLayoutContactRoute
-  '/pages/help': typeof mainPagesLayoutHelpRoute
-  '/pages/privacy-policy': typeof mainPagesLayoutPrivacyPolicyRoute
-  '/pages/terms-of-service': typeof mainPagesLayoutTermsOfServiceRoute
+  '/pages/$slug': typeof mainPagesLayoutSlugRoute
   '/dashboard/onboardings': typeof mainDashboardOnboardingsIndexRoute
 }
 export interface FileRoutesById {
@@ -154,11 +120,7 @@ export interface FileRoutesById {
   '/(main)/dashboard/': typeof mainDashboardIndexRoute
   '/(main)/pages/': typeof mainPagesIndexRoute
   '/(main)/dashboard/onboardings/profile': typeof mainDashboardOnboardingsProfileRoute
-  '/(main)/pages/_layout/about': typeof mainPagesLayoutAboutRoute
-  '/(main)/pages/_layout/contact': typeof mainPagesLayoutContactRoute
-  '/(main)/pages/_layout/help': typeof mainPagesLayoutHelpRoute
-  '/(main)/pages/_layout/privacy-policy': typeof mainPagesLayoutPrivacyPolicyRoute
-  '/(main)/pages/_layout/terms-of-service': typeof mainPagesLayoutTermsOfServiceRoute
+  '/(main)/pages/_layout/$slug': typeof mainPagesLayoutSlugRoute
   '/(main)/dashboard/onboardings/': typeof mainDashboardOnboardingsIndexRoute
 }
 export interface FileRouteTypes {
@@ -173,11 +135,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/pages/'
     | '/dashboard/onboardings/profile'
-    | '/pages/about'
-    | '/pages/contact'
-    | '/pages/help'
-    | '/pages/privacy-policy'
-    | '/pages/terms-of-service'
+    | '/pages/$slug'
     | '/dashboard/onboardings/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -188,11 +146,7 @@ export interface FileRouteTypes {
     | '/dashboard/subscribe'
     | '/dashboard'
     | '/dashboard/onboardings/profile'
-    | '/pages/about'
-    | '/pages/contact'
-    | '/pages/help'
-    | '/pages/privacy-policy'
-    | '/pages/terms-of-service'
+    | '/pages/$slug'
     | '/dashboard/onboardings'
   id:
     | '__root__'
@@ -206,11 +160,7 @@ export interface FileRouteTypes {
     | '/(main)/dashboard/'
     | '/(main)/pages/'
     | '/(main)/dashboard/onboardings/profile'
-    | '/(main)/pages/_layout/about'
-    | '/(main)/pages/_layout/contact'
-    | '/(main)/pages/_layout/help'
-    | '/(main)/pages/_layout/privacy-policy'
-    | '/(main)/pages/_layout/terms-of-service'
+    | '/(main)/pages/_layout/$slug'
     | '/(main)/dashboard/onboardings/'
   fileRoutesById: FileRoutesById
 }
@@ -291,39 +241,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof mainDashboardOnboardingsIndexRouteImport
       parentRoute: typeof mainDashboardRouteRoute
     }
-    '/(main)/pages/_layout/terms-of-service': {
-      id: '/(main)/pages/_layout/terms-of-service'
-      path: '/terms-of-service'
-      fullPath: '/pages/terms-of-service'
-      preLoaderRoute: typeof mainPagesLayoutTermsOfServiceRouteImport
-      parentRoute: typeof mainPagesLayoutRouteRoute
-    }
-    '/(main)/pages/_layout/privacy-policy': {
-      id: '/(main)/pages/_layout/privacy-policy'
-      path: '/privacy-policy'
-      fullPath: '/pages/privacy-policy'
-      preLoaderRoute: typeof mainPagesLayoutPrivacyPolicyRouteImport
-      parentRoute: typeof mainPagesLayoutRouteRoute
-    }
-    '/(main)/pages/_layout/help': {
-      id: '/(main)/pages/_layout/help'
-      path: '/help'
-      fullPath: '/pages/help'
-      preLoaderRoute: typeof mainPagesLayoutHelpRouteImport
-      parentRoute: typeof mainPagesLayoutRouteRoute
-    }
-    '/(main)/pages/_layout/contact': {
-      id: '/(main)/pages/_layout/contact'
-      path: '/contact'
-      fullPath: '/pages/contact'
-      preLoaderRoute: typeof mainPagesLayoutContactRouteImport
-      parentRoute: typeof mainPagesLayoutRouteRoute
-    }
-    '/(main)/pages/_layout/about': {
-      id: '/(main)/pages/_layout/about'
-      path: '/about'
-      fullPath: '/pages/about'
-      preLoaderRoute: typeof mainPagesLayoutAboutRouteImport
+    '/(main)/pages/_layout/$slug': {
+      id: '/(main)/pages/_layout/$slug'
+      path: '/$slug'
+      fullPath: '/pages/$slug'
+      preLoaderRoute: typeof mainPagesLayoutSlugRouteImport
       parentRoute: typeof mainPagesLayoutRouteRoute
     }
     '/(main)/dashboard/onboardings/profile': {
@@ -356,19 +278,11 @@ const mainDashboardRouteRouteWithChildren =
   mainDashboardRouteRoute._addFileChildren(mainDashboardRouteRouteChildren)
 
 interface mainPagesLayoutRouteRouteChildren {
-  mainPagesLayoutAboutRoute: typeof mainPagesLayoutAboutRoute
-  mainPagesLayoutContactRoute: typeof mainPagesLayoutContactRoute
-  mainPagesLayoutHelpRoute: typeof mainPagesLayoutHelpRoute
-  mainPagesLayoutPrivacyPolicyRoute: typeof mainPagesLayoutPrivacyPolicyRoute
-  mainPagesLayoutTermsOfServiceRoute: typeof mainPagesLayoutTermsOfServiceRoute
+  mainPagesLayoutSlugRoute: typeof mainPagesLayoutSlugRoute
 }
 
 const mainPagesLayoutRouteRouteChildren: mainPagesLayoutRouteRouteChildren = {
-  mainPagesLayoutAboutRoute: mainPagesLayoutAboutRoute,
-  mainPagesLayoutContactRoute: mainPagesLayoutContactRoute,
-  mainPagesLayoutHelpRoute: mainPagesLayoutHelpRoute,
-  mainPagesLayoutPrivacyPolicyRoute: mainPagesLayoutPrivacyPolicyRoute,
-  mainPagesLayoutTermsOfServiceRoute: mainPagesLayoutTermsOfServiceRoute,
+  mainPagesLayoutSlugRoute: mainPagesLayoutSlugRoute,
 }
 
 const mainPagesLayoutRouteRouteWithChildren =

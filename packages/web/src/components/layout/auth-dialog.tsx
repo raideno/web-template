@@ -1,4 +1,4 @@
-import { InfoCircledIcon } from '@radix-ui/react-icons'
+import { InfoCircledIcon } from "@radix-ui/react-icons";
 import {
   Box,
   Button,
@@ -7,75 +7,76 @@ import {
   Flex,
   Heading,
   Text,
-} from '@radix-ui/themes'
-import { MetadataRegistry } from '@raideno/auto-form/registry'
-import { AutoForm } from '@raideno/auto-form/ui'
+} from "@radix-ui/themes";
+import { MetadataRegistry } from "@raideno/auto-form/registry";
+import { AutoForm } from "@raideno/auto-form/ui";
 import {
   Link,
   getRouteApi,
   useRouteContext,
   useRouter,
-} from '@tanstack/react-router'
-import React from 'react'
-import { toast } from 'sonner'
-import { z } from 'zod'
+} from "@tanstack/react-router";
+import React from "react";
+import { toast } from "sonner";
+import { z } from "zod";
 
 import {
   OTPInputControllerFactory,
   OTPInputRenderer,
-} from '../controllers/opt-input'
+} from "../controllers/opt-input";
 // eslint-disable-next-line import/no-duplicates
-import phones from '../controllers/phone-input.json'
+import phones from "../controllers/phone-input.json";
 // eslint-disable-next-line import/no-duplicates
-import { PhoneInputController } from '../controllers/phone-input'
+import { PhoneInputController } from "../controllers/phone-input";
 
-import type { AnyController, AnyRenderer } from '../controllers'
+import type { AnyController, AnyRenderer } from "../controllers";
 
-import type { COME_BACK_FROM_REDIRECT_SEARCH_PARAM_TYPE } from '@/constants/search'
+import type { COME_BACK_FROM_REDIRECT_SEARCH_PARAM_TYPE } from "@/constants/search";
 import {
   COME_BACK_FROM_REDIRECT_SEARCH_PARAM_NAME,
   REDIRECT_TO_SEARCH_PARAM_NAME,
   REQUIRE_AUTHENTICATION_SEARCH_PARAM_NAME,
-} from '@/constants/search'
+} from "@/constants/search";
+import { ACCENT_COLOR } from "@/contexts/react/theme";
 
 const PhoneAuthSchema = z.object({
   phone: z.tuple([z.string(), z.string()]).register(MetadataRegistry, {
     controller: PhoneInputController as AnyController,
   }),
   consent: z.boolean().register(MetadataRegistry, {
-    description: 'I agree to receive WhatsApp messages.',
+    description: "I agree to receive WhatsApp messages.",
   }),
-})
+});
 
 const PhoneAuthCodeSchema = z.object({
   code: z.string().register(MetadataRegistry, {
     controller: OTPInputControllerFactory({ length: 6 }) as AnyController,
     renderer: OTPInputRenderer as AnyRenderer,
   }),
-})
+});
 
-const route = getRouteApi('/')
+const route = getRouteApi("/");
 
 export interface AuthDialogProps {
-  children?: React.ReactNode
+  children?: React.ReactNode;
 }
 
 export const AuthDialog: React.FC<AuthDialogProps> = ({ children }) => {
-  const router = useRouter()
+  const router = useRouter();
   // TODO: careful in case the component is used outside of the route
-  const context = useRouteContext({ from: '/' })
+  const context = useRouteContext({ from: "/" });
 
-  const closingDueToAuthRef = React.useRef(false)
+  const closingDueToAuthRef = React.useRef(false);
 
-  const search = route.useSearch()
+  const search = route.useSearch();
 
-  const requireAuth = Boolean(search[REQUIRE_AUTHENTICATION_SEARCH_PARAM_NAME])
-  const redirectTo = search[REDIRECT_TO_SEARCH_PARAM_NAME] ?? undefined
+  const requireAuth = Boolean(search[REQUIRE_AUTHENTICATION_SEARCH_PARAM_NAME]);
+  const redirectTo = search[REDIRECT_TO_SEARCH_PARAM_NAME] ?? undefined;
 
-  const [isCodeSent, setIsCodeSent] = React.useState(false)
-  const [phone, setPhone] = React.useState('')
-  const [isLoading, setIsLoading] = React.useState(false)
-  const [isOpen, setIsOpen] = React.useState(false)
+  const [isCodeSent, setIsCodeSent] = React.useState(false);
+  const [phone, setPhone] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const clearParamsAndMaybeRedirect = React.useCallback(() => {
     if (redirectTo) {
@@ -89,115 +90,115 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ children }) => {
             true satisfies COME_BACK_FROM_REDIRECT_SEARCH_PARAM_TYPE,
         }),
         reloadDocument: true,
-      })
+      });
     } else {
       router.navigate({
-        to: '/',
+        to: "/",
         search: (old) => ({
           ...old,
           [REQUIRE_AUTHENTICATION_SEARCH_PARAM_NAME]: undefined,
           [REDIRECT_TO_SEARCH_PARAM_NAME]: undefined,
         }),
-      })
+      });
     }
-  }, [redirectTo, router])
+  }, [redirectTo, router]);
 
   const handleSendCode = async (data: z.infer<typeof PhoneAuthSchema>) => {
     if (!data.consent) {
-      toast.error('You must agree to receive WhatsApp messages.')
-      return
+      toast.error("You must agree to receive WhatsApp messages.");
+      return;
     }
 
-    const cleanedPhone = data.phone[1].replace(/^0/, '').replace(/\s/g, '')
+    const cleanedPhone = data.phone[1].replace(/^0/, "").replace(/\s/g, "");
 
     if (!/^\d+$/.test(cleanedPhone)) {
-      toast.error('Phone number must contain only digits.')
-      return
+      toast.error("Phone number must contain only digits.");
+      return;
     }
 
     if (cleanedPhone.length < 7) {
-      toast.error('Phone number must be at least 7 digits.')
-      return
+      toast.error("Phone number must be at least 7 digits.");
+      return;
     }
 
     if (!phones.map((p) => p.dial_code).includes(`+${data.phone[0]}`)) {
-      toast.error('Please select a valid country code.')
-      return
+      toast.error("Please select a valid country code.");
+      return;
     }
 
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       await context.authentication.signInOtp.send({
         phone: `+${data.phone[0]}${cleanedPhone}`,
-      })
-      setPhone(`+${data.phone[0]}${cleanedPhone}`)
-      setIsCodeSent(true)
-      toast.success('Verification code sent successfully!')
+      });
+      setPhone(`+${data.phone[0]}${cleanedPhone}`);
+      setIsCodeSent(true);
+      toast.success("Verification code sent successfully!");
     } catch (error) {
-      console.error('Error sending code:', error)
-      toast.error('Failed to send verification code. Please try again.')
+      console.error("Error sending code:", error);
+      toast.error("Failed to send verification code. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleCodeConfirmation = async (
     data: z.infer<typeof PhoneAuthCodeSchema>,
   ) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       await context.authentication.signInOtp.validate({
         phone: phone,
         code: data.code,
-      })
-      toast.success('Successfully authenticated!')
+      });
+      toast.success("Successfully authenticated!");
       if (requireAuth) {
-        closingDueToAuthRef.current = true
-        clearParamsAndMaybeRedirect()
+        closingDueToAuthRef.current = true;
+        clearParamsAndMaybeRedirect();
       } else {
-        setIsOpen(false)
+        setIsOpen(false);
         router.navigate({
-          to: '/',
+          to: "/",
           reloadDocument: true,
-        })
+        });
       }
     } catch (error) {
-      console.error('Error confirming code:', error)
-      toast.error('Invalid verification code. Please try again.')
+      console.error("Error confirming code:", error);
+      toast.error("Invalid verification code. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleBack = () => {
-    setIsCodeSent(false)
-    setPhone('')
-  }
+    setIsCodeSent(false);
+    setPhone("");
+  };
 
   const handleOpenChange = (open: boolean) => {
     if (requireAuth) {
       if (!open) {
         if (closingDueToAuthRef.current) {
-          closingDueToAuthRef.current = false
-          return
+          closingDueToAuthRef.current = false;
+          return;
         }
         router.navigate({
-          to: '/',
+          to: "/",
           search: (old) => ({
             ...old,
             [REQUIRE_AUTHENTICATION_SEARCH_PARAM_NAME]: undefined,
             [REDIRECT_TO_SEARCH_PARAM_NAME]: undefined,
           }),
-        })
+        });
       }
     } else {
-      setIsOpen(open)
+      setIsOpen(open);
     }
-  }
+  };
 
-  const open = requireAuth ? requireAuth : isOpen
+  const open = requireAuth ? requireAuth : isOpen;
 
-  const isRedirectMode = requireAuth
+  const isRedirectMode = requireAuth;
 
   return (
     <Dialog.Root open={open} onOpenChange={handleOpenChange}>
@@ -208,42 +209,42 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ children }) => {
             <>
               <Dialog.Title className="sr-only">
                 {isCodeSent
-                  ? 'Enter Verification Code'
+                  ? "Enter Verification Code"
                   : isRedirectMode
-                    ? 'Authentication Required'
-                    : 'Welcome Back!'}
+                    ? "Authentication Required"
+                    : "Welcome Back!"}
               </Dialog.Title>
               <Dialog.Description className="sr-only">
                 {isCodeSent
-                  ? 'Enter the verification code sent to your phone.'
+                  ? "Enter the verification code sent to your phone."
                   : isRedirectMode
-                    ? 'You must be authenticated to access the requested page.'
-                    : 'Enter your phone number to get started.'}
+                    ? "You must be authenticated to access the requested page."
+                    : "Enter your phone number to get started."}
               </Dialog.Description>
             </>
             <Heading>
               {isCodeSent
-                ? 'Enter Verification Code'
+                ? "Enter Verification Code"
                 : isRedirectMode
-                  ? 'Authentication Required'
-                  : 'Welcome Back!'}
+                  ? "Authentication Required"
+                  : "Welcome Back!"}
             </Heading>
             <Text>
               {isCodeSent ? (
-                'We sent you a verification code.'
+                "We sent you a verification code."
               ) : isRedirectMode ? (
                 <>
                   You need to be authenticated to access this page.
                   {redirectTo && (
                     <>
-                      {' '}
-                      After signing in, you will be redirected to{' '}
+                      {" "}
+                      After signing in, you will be redirected to{" "}
                       <strong>{redirectTo}</strong>.
                     </>
                   )}
                 </>
               ) : (
-                'Enter your phone number to get started.'
+                "Enter your phone number to get started."
               )}
             </Text>
           </Box>
@@ -253,7 +254,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ children }) => {
               <AutoForm.Root
                 onSubmit={handleSendCode}
                 schema={PhoneAuthSchema}
-                defaultValues={{ phone: ['', ''], consent: true }}
+                defaultValues={{ phone: ["", ""], consent: true }}
               >
                 <AutoForm.Content />
                 <Flex mt="4" className="w-full">
@@ -264,13 +265,13 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ children }) => {
                     type="submit"
                     disabled={isLoading}
                   >
-                    {isLoading ? 'Sending...' : 'Send WhatsApp Code'}
+                    {isLoading ? "Sending..." : "Send WhatsApp Code"}
                   </Button>
                 </Flex>
               </AutoForm.Root>
             ) : (
               <Flex direction="column" gap="4">
-                <Callout.Root color="green">
+                <Callout.Root color={ACCENT_COLOR}>
                   <Callout.Icon>
                     <InfoCircledIcon />
                   </Callout.Icon>
@@ -281,7 +282,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ children }) => {
                 <AutoForm.Root
                   onSubmit={handleCodeConfirmation}
                   schema={PhoneAuthCodeSchema}
-                  defaultValues={{ code: '' }}
+                  defaultValues={{ code: "" }}
                 >
                   <AutoForm.Content />
                   <Box
@@ -304,7 +305,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ children }) => {
                       type="submit"
                       disabled={isLoading}
                     >
-                      {isLoading ? 'Verifying...' : 'Confirm Code'}
+                      {isLoading ? "Verifying..." : "Confirm Code"}
                     </Button>
                   </Box>
                 </AutoForm.Root>
@@ -313,15 +314,15 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ children }) => {
           </Flex>
 
           <Text>
-            By signing in you agree to our{' '}
-            <Link to="/pages/terms-of-service">
-              <Text weight={'medium'} className="underline">
+            By signing in you agree to our{" "}
+            <Link to="/pages/$slug" params={{ slug: "terms-of-service" }}>
+              <Text weight={"medium"} className="underline">
                 Terms of Service
               </Text>
-            </Link>{' '}
-            and{' '}
-            <Link to="/pages/privacy-policy">
-              <Text weight={'medium'} className="underline">
+            </Link>{" "}
+            and{" "}
+            <Link to="/pages/$slug" params={{ slug: "privacy-policy" }}>
+              <Text weight={"medium"} className="underline">
                 Privacy Policy
               </Text>
             </Link>
@@ -330,5 +331,5 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ children }) => {
         </Flex>
       </Dialog.Content>
     </Dialog.Root>
-  )
-}
+  );
+};

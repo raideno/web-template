@@ -6,6 +6,8 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 
+// TODO: make the manifest be generated at build time from the site's configuration
+// TODO: same thing for the metadata
 export default defineConfig({
   resolve: {
     alias: {

@@ -26,6 +26,7 @@
         "@convex-dev/rate-limiter": "^0.3.0",
         "@convex-dev/react-query": "^0.0.0-alpha.11",
         "@raideno/convex-analytics": "^0.0.2",
+        "@raideno/convex-kv": "^0.1.0",
         "@raideno/convex-stripe": "^0.1.20",
         "convex": "^1.29.1",
         "convex-helpers": "^0.1.105",

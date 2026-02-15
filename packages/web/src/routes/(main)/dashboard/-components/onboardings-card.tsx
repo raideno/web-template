@@ -15,6 +15,7 @@ import { Link } from "@tanstack/react-router";
 import type { FunctionReturnType } from "convex/server";
 
 import { api } from "backend/convex/api";
+import { ACCENT_COLOR } from "@/contexts/react/theme";
 
 type OnboardingItem = NonNullable<
   FunctionReturnType<typeof api.onboardings.list>
@@ -91,7 +92,7 @@ export const OnboardingsCard: React.FC<OnboardingsCardProps> = () => {
             size="3"
             variant="classic"
             className="w-full!"
-            color="green"
+            color={ACCENT_COLOR}
           >
             <Link to={nextPath}>Continue</Link>
           </Button>

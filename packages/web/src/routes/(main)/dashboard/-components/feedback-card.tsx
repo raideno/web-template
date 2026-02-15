@@ -20,6 +20,7 @@ import { z } from "zod";
 import type { FunctionReturnType } from "convex/server";
 
 import { api } from "backend/convex/api";
+import { email, name } from "@/constants/parameters";
 
 const FeedbackSchema = z.object({
   tag: z_
@@ -118,8 +119,8 @@ export function FeedbackCard({ user }: FeedbackCardProps) {
             </Text>
             <Text color="gray" size="2">
               You can also reach us directly at{" "}
-              <Link href="mailto:contact@closeby.tel" weight="bold">
-                contact@closeby.tel
+              <Link href={`mailto:${email.contact}`} weight="bold">
+                {email.contact}
               </Link>
             </Text>
             <Button
@@ -143,10 +144,10 @@ export function FeedbackCard({ user }: FeedbackCardProps) {
             </Dialog.Title>
             <Dialog.Description>
               <Text color="gray">
-                We appreciate your feedback! It helps us improve Closeby.tel.
-                For direct support, email us at{" "}
-                <Link href="mailto:contact@closeby.tel" weight="bold">
-                  contact@closeby.tel
+                We appreciate your feedback! It helps us improve {name}. For
+                direct support, email us at{" "}
+                <Link href={`mailto:${email.contact}`} weight="bold">
+                  {email.contact}
                 </Link>
               </Text>
             </Dialog.Description>
