@@ -14,6 +14,7 @@ import type * as crons from "../crons.js";
 import type * as feedbacks from "../feedbacks.js";
 import type * as helpers from "../helpers.js";
 import type * as http from "../http.js";
+import type * as kv from "../kv.js";
 import type * as magics from "../magics.js";
 import type * as models_feedbacks from "../models/feedbacks.js";
 import type * as models_magics from "../models/magics.js";
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   feedbacks: typeof feedbacks;
   helpers: typeof helpers;
   http: typeof http;
+  kv: typeof kv;
   magics: typeof magics;
   "models/feedbacks": typeof models_feedbacks;
   "models/magics": typeof models_magics;

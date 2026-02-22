@@ -12,7 +12,7 @@ import { DEFAULT_QUOTAS } from "../models/quotas";
 
 export type DeductFromConsumableIfOwnsEnoughType = boolean;
 
-export class CreditsService {
+export class QuotasService {
   // TODO: add something to fetch the limits
 
   static async deriveBillingId(
@@ -50,7 +50,7 @@ export class CreditsService {
       );
     else
       throw new Error(
-        "CreditsService.deductFromConsumableIfOwnsEnough can only be called from MutationCtx or ActionCtx",
+        "QuotasService.deductFromConsumableIfOwnsEnough can only be called from MutationCtx or ActionCtx",
       );
   }
 
@@ -154,7 +154,7 @@ export const deductFromConsumableIfOwnsEnoughFromAction = internalMutation({
     ),
   },
   handler: async (context, args) => {
-    return await CreditsService.deductFromConsumableIfOwnsEnough(context, {
+    return await QuotasService.deductFromConsumableIfOwnsEnough(context, {
       userId: args.userId,
       quantity: args.quantity,
       quota: args.quota,

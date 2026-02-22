@@ -6,7 +6,7 @@ import type { ActionCtx, MutationCtx, QueryCtx } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { internalQuery } from "../_generated/server";
 
-import { CreditsService } from "./quotas";
+import { QuotasService } from "./quotas";
 
 export type SubscriptionServiceIsSubscribedReturnType =
   | {
@@ -85,7 +85,7 @@ export class SubscriptionService {
         billingId: null,
         subscription: null,
       };
-    const billingId = await CreditsService.deriveBillingId(subscription);
+    const billingId = await QuotasService.deriveBillingId(subscription);
 
     if (!billingId)
       return {

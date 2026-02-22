@@ -5,7 +5,7 @@ import type { Id } from "./_generated/dataModel";
 
 import { internalMutation, query } from "./_generated/server";
 
-import { CreditsService } from "./services/quotas";
+import { QuotasService } from "./services/quotas";
 import { DEFAULT_QUOTAS } from "./models/quotas";
 
 // TODO: move to the credits service file
@@ -80,7 +80,7 @@ export const get = query({
         };
       } else {
         const derivedBillingId =
-          await CreditsService.deriveBillingId(subscription);
+          await QuotasService.deriveBillingId(subscription);
 
         usage_ = {
           _id: "temporary" as Id<"counters">,

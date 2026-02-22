@@ -13,7 +13,7 @@ import {
   STRIPE_SECRET_KEY,
   STRIPE_WEBHOOK_SECRET,
 } from "./parameters";
-import { CreditsService } from "./services/quotas";
+import { QuotasService } from "./services/quotas";
 
 export default {
   stripe: {
@@ -56,7 +56,7 @@ export default {
           )
             return;
 
-          const billingId = await CreditsService.deriveBillingId(subscription);
+          const billingId = await QuotasService.deriveBillingId(subscription);
 
           if (!billingId) return;
 
