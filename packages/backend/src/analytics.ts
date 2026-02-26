@@ -1,6 +1,15 @@
 import { internalConvexAnalytics } from "@raideno/convex-analytics/server";
 
-import configuration from "./analytics.config";
+import { DiscordProcessorFactory } from "@raideno/convex-analytics/processors/discord";
 
-export const { store, analytics, process } =
-  internalConvexAnalytics(configuration);
+import { DISCORD_WEBHOOK_URL } from "./parameters";
+
+export const { store, analytics, process } = internalConvexAnalytics({
+  processors: [
+    DiscordProcessorFactory({
+      events: ["*"],
+      url: DISCORD_WEBHOOK_URL,
+    }),
+  ],
+  processEveryK: 1,
+});

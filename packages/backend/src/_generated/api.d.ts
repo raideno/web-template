@@ -25,6 +25,7 @@ import type * as onboardings from "../onboardings.js";
 import type * as parameters from "../parameters.js";
 import type * as quotas from "../quotas.js";
 import type * as seed from "../seed.js";
+import type * as services_factory from "../services/factory.js";
 import type * as services_magic from "../services/magic.js";
 import type * as services_quotas from "../services/quotas.js";
 import type * as services_subscription from "../services/subscription.js";
@@ -54,6 +55,7 @@ declare const fullApi: ApiFromModules<{
   parameters: typeof parameters;
   quotas: typeof quotas;
   seed: typeof seed;
+  "services/factory": typeof services_factory;
   "services/magic": typeof services_magic;
   "services/quotas": typeof services_quotas;
   "services/subscription": typeof services_subscription;

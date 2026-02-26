@@ -22,6 +22,7 @@ import {
   SUBSCRIPTION_RETURN_SEARCH_PARAM_NAME,
   SUBSCRIPTION_RETURN_SEARCH_PARAM_ZOD_VALIDATOR,
 } from "@/constants/search";
+import { ConsumeCard } from "./-components/consume-card";
 
 export const Route = createFileRoute("/(main)/dashboard/")({
   validateSearch: z.object({
@@ -123,6 +124,8 @@ export const Route = createFileRoute("/(main)/dashboard/")({
           {isSubscribed && <SubscriptionCard subscription={subscription} />}
 
           <SubscribeDialog open={!isSubscribed} />
+
+          <ConsumeCard user={user} />
 
           <AccountCard user={user} />
 

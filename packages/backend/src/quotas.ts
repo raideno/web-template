@@ -1,12 +1,12 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 
 import type { Id } from "./_generated/dataModel";
 
-import { internalMutation, query } from "./_generated/server";
+import { internalMutation, mutation, query } from "./_generated/server";
 
-import { QuotasService } from "./services/quotas";
 import { DEFAULT_QUOTAS } from "./models/quotas";
+import { deriveBillingId, QuotasService } from "./services/quotas";
 
 // TODO: move to the credits service file
 export const setup = internalMutation({
@@ -19,7 +19,7 @@ export const setup = internalMutation({
   handler: async (context, args) => {
     const customer = await context.db
       .query("stripeCustomers")
-      .withIndex("byCustomerId", (q) => q.eq("customerId", args.customerId))
+      .withIndex("byStripeId", (q) => q.eq("customerId", args.customerId))
       .unique();
 
     if (!customer) return;
@@ -79,8 +79,7 @@ export const get = query({
           _creationTime: Date.now(),
         };
       } else {
-        const derivedBillingId =
-          await QuotasService.deriveBillingId(subscription);
+        const derivedBillingId = await deriveBillingId(subscription);
 
         usage_ = {
           _id: "temporary" as Id<"counters">,
@@ -93,5 +92,56 @@ export const get = query({
     }
 
     return usage_;
+  },
+});
+
+export const consume = mutation({
+  args: {
+    quota: v.string(),
+    quantity: v.number(),
+  },
+  handler: async (context, args) => {
+    const userId = await getAuthUserId(context);
+
+    if (!userId) throw new ConvexError("Unauthorized");
+
+    const customer = await context.db
+      .query("stripeCustomers")
+      .withIndex("byEntityId", (q) => q.eq("entityId", userId))
+      .unique();
+
+    if (!customer) {
+      throw new ConvexError("No Stripe customer found for user");
+    }
+
+    const subscription = await context.db
+      .query("stripeSubscriptions")
+      .withIndex("byCustomerId", (q) => q.eq("customerId", customer.customerId))
+      .unique();
+
+    console.log("[subscription]:", subscription);
+
+    if (
+      !subscription ||
+      !subscription.stripe ||
+      subscription.stripe.status !== "active"
+    ) {
+      throw new ConvexError({
+        message: "No active subscription found for user",
+      });
+    }
+
+    const billingId = await deriveBillingId(subscription);
+
+    if (!billingId) {
+      throw new ConvexError("Unable to derive billing ID from subscription");
+    }
+
+    return await QuotasService.execute(context, {
+      userId: userId,
+      quantity: args.quantity,
+      quota: args.quota,
+      billingId: billingId,
+    });
   },
 });

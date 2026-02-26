@@ -1,17 +1,145 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { internalConvexStripe } from "@raideno/convex-stripe/server";
+import {
+  internalConvexStripe,
+  syncAllTables,
+} from "@raideno/convex-stripe/server";
 import { v } from "convex/values";
 
 import type { AnyDataModel, GenericActionCtx } from "convex/server";
 import type { Stripe } from "stripe";
 
-import { action, internalQuery, query } from "./_generated/server";
+import {
+  action,
+  internalAction,
+  internalQuery,
+  query,
+} from "./_generated/server";
 
 import { analytics } from "./analytics";
-import stripeConfig from "./stripe.config";
 
-export const { setup, store, stripe, sync } =
-  internalConvexStripe(stripeConfig);
+import { internal } from "./_generated/api";
+
+import { safeParseInt } from "./helpers";
+import {
+  DEFAULT_LIMIT,
+  STRIPE_SECRET_KEY,
+  STRIPE_WEBHOOK_SECRET,
+} from "./parameters";
+import { deriveBillingId } from "./services/quotas";
+
+export const { store, stripe, sync } = internalConvexStripe({
+  stripe: {
+    secret_key: STRIPE_SECRET_KEY,
+    account_webhook_secret: STRIPE_WEBHOOK_SECRET,
+  },
+  sync: {
+    tables: syncAllTables(),
+  },
+  callbacks: {
+    // TODO: the callbacks must have two functions, a before and a after, this is important for payment related actions where we
+    // add credits only after payment_status has changed
+    /**
+     * Because with current implementation, we'll need to add a separate table to track paymentIds and whether refill has been applied or not.
+     */
+    afterChange: async (context, operation, event) => {
+      if (event.table === "stripeCheckoutSessions" && operation === "upsert") {
+        const checkoutSession = "" as any as Stripe.Checkout.Session;
+
+        checkoutSession.payment_status === "paid";
+      }
+      if (event.table === "stripeCustomers" && operation === "upsert") {
+        try {
+          /**
+           * TODO: check the new available data, if any email is specified, update the user record if none have been given.
+           */
+        } catch (error) {}
+      }
+      if (event.table === "stripeSubscriptions" && operation === "upsert") {
+        try {
+          const subscription = await context.db.get(
+            "stripeSubscriptions",
+            event._id,
+          );
+
+          if (
+            !subscription ||
+            !subscription.stripe ||
+            subscription.stripe.items.data.length === 0 ||
+            subscription.stripe.status !== "active"
+          )
+            return;
+
+          const billingId = await deriveBillingId(subscription);
+
+          if (!billingId) return;
+
+          const messagesLimit = safeParseInt(
+            subscription.stripe.items.data[0].price.metadata["messages.limit"],
+            DEFAULT_LIMIT,
+          );
+          const schedulesLimit = safeParseInt(
+            subscription.stripe.items.data[0].price.metadata["schedules.limit"],
+            DEFAULT_LIMIT,
+          );
+
+          await context.runMutation(internal.quotas.setup, {
+            customerId: subscription.customerId,
+            billingId: billingId,
+            messages: {
+              limit: messagesLimit,
+            },
+            schedules: {
+              limit: schedulesLimit,
+            },
+          });
+
+          const customer = await context.db
+            .query("stripeCustomers")
+            .withIndex("byStripeId", (q) =>
+              q.eq("customerId", subscription.customerId),
+            )
+            .unique();
+
+          if (!customer) return;
+
+          await analytics.track(
+            context,
+            {
+              name: "subscription.updated",
+              properties: {
+                customerId: subscription.customerId,
+                billingId: billingId,
+                messagesLimit: messagesLimit,
+                schedulesLimit: schedulesLimit,
+              },
+              distinctId: customer.entityId,
+            },
+            { blocking: false },
+          );
+        } catch (error) {
+          console.error(
+            "[stripe][afterChange][error]:",
+            "Failed to setup billingId for subscription update",
+            error,
+          );
+        }
+      }
+    },
+  },
+});
+
+export const setup = internalAction({
+  args: {
+    entityId: v.id("users"),
+    email: v.optional(v.string()),
+  },
+  handler: async (context, args) => {
+    await stripe.customers.create(context, {
+      entityId: args.entityId,
+      email: args.email,
+    });
+  },
+});
 
 export const get = internalQuery({
   args: {

@@ -1,92 +1,31 @@
 import { withSystemFields } from "convex-helpers/validators";
 import { v } from "convex/values";
-
 import type { DataModel, Id } from "../_generated/dataModel";
-import type { ActionCtx, MutationCtx } from "../_generated/server";
-
-import { internal } from "../_generated/api";
-import { internalMutation } from "../_generated/server";
-import schema from "../schema";
-// TODO: improve defaults
+import type { MutationCtx } from "../_generated/server";
 import { DEFAULT_QUOTAS } from "../models/quotas";
+import schema from "../schema";
+import { defineServiceMutation } from "./factory";
 
-export type DeductFromConsumableIfOwnsEnoughType = boolean;
+export const deriveBillingId = async (
+  subscription: DataModel["stripeSubscriptions"]["document"],
+) => {
+  if (!subscription.stripe || subscription.stripe.items.data.length === 0)
+    return null;
+  const item = subscription.stripe.items.data[0];
+  return `${item.current_period_start}.${item.current_period_end}`;
+};
 
-export class QuotasService {
-  // TODO: add something to fetch the limits
-
-  static async deriveBillingId(
-    subscription: DataModel["stripeSubscriptions"]["document"],
-  ) {
-    if (!subscription.stripe || subscription.stripe.items.data.length === 0)
-      return null;
-
-    const item = subscription.stripe.items.data[0];
-
-    // TODO: any other alternative ?
-    // return item.id
-    return `${item.current_period_start}.${item.current_period_end}`;
-  }
-
-  static async deductFromConsumableIfOwnsEnough(
-    context: MutationCtx | ActionCtx,
-    args: {
-      userId: Id<"users">;
-      quantity: number;
-      quota: string;
-      billingId: string;
-      subscription: DataModel["stripeSubscriptions"]["document"];
-    },
-  ): Promise<DeductFromConsumableIfOwnsEnoughType> {
-    if ("runAction" in context)
-      return await this.deductFromConsumableIfOwnsEnoughFromAction(
-        context,
-        args,
-      );
-    else if ("runMutation" in context)
-      return await this.deductFromConsumableIfOwnsEnoughFromMutation(
-        context,
-        args,
-      );
-    else
-      throw new Error(
-        "QuotasService.deductFromConsumableIfOwnsEnough can only be called from MutationCtx or ActionCtx",
-      );
-  }
-
-  private static async deductFromConsumableIfOwnsEnoughFromAction(
-    context: ActionCtx,
-    args: {
-      userId: Id<"users">;
-      quantity: number;
-      quota: string;
-      billingId: string;
-      subscription: DataModel["stripeSubscriptions"]["document"];
-    },
-  ): Promise<DeductFromConsumableIfOwnsEnoughType> {
-    return await context.runMutation(
-      internal.services.quotas.deductFromConsumableIfOwnsEnoughFromAction,
-      {
-        userId: args.userId,
-        quantity: args.quantity,
-        quota: args.quota,
-        billingId: args.billingId,
-        subscription: args.subscription,
-      },
-    );
-  }
-
-  private static async deductFromConsumableIfOwnsEnoughFromMutation(
-    context: MutationCtx,
-    args: {
-      userId: Id<"users">;
-      quantity: number;
-      quota: string;
-      billingId: string;
-      subscription: DataModel["stripeSubscriptions"]["document"];
-    },
-  ): Promise<DeductFromConsumableIfOwnsEnoughType> {
-    let counter = await context.db
+export const QuotasService = defineServiceMutation({
+  args: {
+    userId: v.id("users"),
+    quantity: v.number(),
+    quota: v.string(),
+    billingId: v.string(),
+  },
+  returns: v.boolean(),
+  ref: "services/quotas:deductFromConsumableIfOwnsEnoughBridge",
+  handler: async (ctx, args) => {
+    let counter = await ctx.db
       .query("counters")
       .withIndex("by_userId_billingId", (q) =>
         q.eq("userId", args.userId).eq("billingId", args.billingId),
@@ -94,14 +33,8 @@ export class QuotasService {
       .unique();
 
     if (!counter) {
-      // TODO: improve the way we store the limits per subscription, add defaults as well, defaults for each quota
-      // const limit = safeParseInt(
-      //   args.subscription.stripe.items.data[0].price.metadata['limit'],
-      //   DEFAULT_LIMIT,
-      // )
-
       counter = {
-        _id: await context.db.insert("counters", {
+        _id: await ctx.db.insert("counters", {
           userId: args.userId,
           billingId: args.billingId,
           quotas: DEFAULT_QUOTAS,
@@ -114,7 +47,6 @@ export class QuotasService {
     }
 
     const targetQuota = counter.quotas[args.quota];
-
     if (targetQuota.type !== "consumable") {
       throw new Error(`Quota "${args.quota}" not found or is not consumable`);
     }
@@ -126,7 +58,7 @@ export class QuotasService {
       return false;
     }
 
-    await context.db.patch(counter._id, {
+    await ctx.db.patch(counter._id, {
       quotas: {
         ...counter.quotas,
         [args.quota]: {
@@ -137,29 +69,7 @@ export class QuotasService {
     });
 
     return true;
-  }
-}
-
-export const deductFromConsumableIfOwnsEnoughFromAction = internalMutation({
-  args: {
-    userId: v.id("users"),
-    quantity: v.number(),
-    quota: v.string(),
-    billingId: v.string(),
-    subscription: v.object(
-      withSystemFields(
-        "stripeSubscriptions",
-        schema.tables.stripeSubscriptions.validator.fields,
-      ),
-    ),
-  },
-  handler: async (context, args) => {
-    return await QuotasService.deductFromConsumableIfOwnsEnough(context, {
-      userId: args.userId,
-      quantity: args.quantity,
-      quota: args.quota,
-      billingId: args.billingId,
-      subscription: args.subscription,
-    });
   },
 });
+
+export const deductFromConsumableIfOwnsEnoughBridge = QuotasService.bridge;

@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
+// NOTE: pack it into a library of its own: https://claude.ai/chat/d8df0c10-6937-438e-9495-077f6626580d
+
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { validate } from "convex-helpers/validators";
 import { v } from "convex/values";
