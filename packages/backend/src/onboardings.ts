@@ -1,121 +1,59 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
-// NOTE: pack it into a library of its own: https://claude.ai/chat/d8df0c10-6937-438e-9495-077f6626580d
-
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { validate } from "convex-helpers/validators";
+import { defineOnboarding } from "@raideno/convex-onboardings";
+import { convexOnboardings } from "@raideno/convex-onboardings/server";
 import { v } from "convex/values";
-
-import type { Infer, VObject } from "convex/values";
-
-import type { DataModel, Id } from "./_generated/dataModel";
-import type { MutationCtx } from "./_generated/server";
-
+import { DataModel, Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 
-// TODO: make the thing checking whether or not to propose the onboarding as a function rather than a fixed value
+export const ProfileOnboarding = defineOnboarding<DataModel>({
+  id: "profile",
+  version: 1,
+  name: "Profile Setup",
+  description: "Set up your user profile.",
 
-export const markOnboardingAsCompleted = async (
-  context: MutationCtx,
-  userId: Id<"users">,
-  onboarding: Onboarding,
-) => {
-  const existing = await context.db
-    .query("onboardings")
-    .withIndex("byIdUserId", (q) =>
-      q.eq("id", onboarding.id).eq("userId", userId),
-    )
-    .unique();
+  required: false,
+  optIn: true,
 
-  if (existing) {
-    await context.db.patch(existing._id, {
-      version: onboarding.version,
-    });
-  } else {
-    await context.db.insert("onboardings", {
-      userId,
-      id: onboarding.id,
-      version: onboarding.version,
-    });
-  }
-};
-
-// TODO: add conditions for the onboarding to appear, authenticated, subscribed, firth-month subscribed, etc
-export type Onboarding = {
-  id: string;
-  name: string;
-  description: string;
-  required: boolean;
-  optIn: boolean;
-  version: number;
-};
-
-export const defineOnboarding = <Args extends VObject<any, any>>(
-  specification: Onboarding & {
-    args: Args;
-    handle: (
-      user: DataModel["users"]["document"],
-      context: MutationCtx,
-      args: Infer<Args>,
-      onboarding: Onboarding & {
-        complete: () => Promise<void>;
-      },
-    ) => void | Promise<void>;
+  condition: async (entityId, ctx) => {
+    return true;
   },
-) => specification;
 
-export const Onboardings = [
-  defineOnboarding({
-    id: "profile",
-    required: false,
-    optIn: true,
-    version: 1,
-    args: v.object({
-      name: v.string(),
-      email: v.string(),
-    }),
-    name: "Profile Setup",
-    description: "Set up your user profile.",
-    handle: async (user, context, args, onboarding) => {
-      const userId = user._id as Id<"users">;
-
-      await context.db.patch(userId, {
-        name: args.name,
-        email: args.email,
-      });
-
-      await onboarding.complete();
-    },
+  args: v.object({
+    name: v.string(),
+    email: v.string(),
   }),
-] as const;
 
-const handleOnboarding = async (
-  context: MutationCtx,
-  user: DataModel["users"]["document"],
-  onboardingHandler: (typeof Onboardings)[number],
-  args_: any,
-) => {
-  const isValid = validate(args_, onboardingHandler.args, { throw: false });
+  handle: async (entityId, ctx, args, onboarding) => {
+    const userId = entityId as Id<"users">;
 
-  if (!isValid) throw new Error("Invalid onboarding arguments");
+    await ctx.db.patch(userId, {
+      name: args.name,
+      email: args.email,
+    });
 
-  const args = args_ as Infer<typeof onboardingHandler.args>;
+    await onboarding.complete();
+  },
+});
 
-  await onboardingHandler.handle(user, context, args as any, {
-    ...({
-      id: onboardingHandler.id,
-      name: onboardingHandler.name,
-      description: onboardingHandler.description,
-    } as Onboarding),
-    complete: async () => {
-      await markOnboardingAsCompleted(
-        context,
-        user._id as Id<"users">,
-        onboardingHandler,
-      );
-    },
-  });
-};
+export const onboardings = convexOnboardings({
+  onboardings: [ProfileOnboarding],
+  onComplete: async (entity, ctx, onboarding) => {
+    // Run logic each time an onboarding finishes
+  },
+  onAllRequiredComplete: async (entity, ctx) => {
+    // Fired when the entity finishes all required onboardings
+  },
+});
+
+export const list = query({
+  args: {},
+  handler: async (context, args) => {
+    const userId = await getAuthUserId(context);
+    if (!userId) return [];
+
+    return onboardings.list(context, userId);
+  },
+});
 
 export const onboard = mutation({
   args: {
@@ -124,48 +62,12 @@ export const onboard = mutation({
   },
   handler: async (context, args) => {
     const userId = await getAuthUserId(context);
+    if (!userId) throw new Error("Not authenticated");
 
-    if (!userId) throw new Error("Unauthorized");
+    const onboarding = await onboardings.status(context, userId, args.id);
+    if (!onboarding) throw new Error("Onboarding not valid for this user");
 
-    const user = await context.db.get(userId);
-
-    if (!user) throw new Error("User not found");
-
-    const onboarding = Onboardings.find((o) => o.id === args.id);
-
-    if (!onboarding) throw new Error("Onboarding not found");
-
-    await handleOnboarding(context, user, onboarding, args.data);
-  },
-});
-
-export const list = query({
-  args: {},
-  handler: async (context) => {
-    const userId = await getAuthUserId(context);
-    if (!userId) return [];
-
-    const rows = await context.db
-      .query("onboardings")
-      .withIndex("by_userId", (q) => q.eq("userId", userId))
-      .collect();
-
-    const versionsById = new Map(rows.map((r) => [r.id, r.version]));
-
-    return Onboardings.map((o) => {
-      const completedVersion = versionsById.get(o.id) ?? 0;
-      const completed = completedVersion === o.version;
-      return {
-        id: o.id,
-        name: o.name,
-        description: o.description,
-        required: o.required,
-        optIn: o.optIn,
-        version: o.version,
-        completedVersion,
-        completed,
-        outdated: completedVersion !== 0 && completedVersion !== o.version,
-      };
-    });
+    // TODO: make the data type safe and the onboardingId type safe as well
+    await onboardings.onboard(context, userId, onboarding.id, args.data);
   },
 });
