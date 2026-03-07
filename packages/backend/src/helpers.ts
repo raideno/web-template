@@ -5,7 +5,7 @@ import {
   zCustomQuery,
 } from "convex-helpers/server/zod4";
 
-import { action, internalMutation, mutation, query } from "./_generated/server";
+import { action, internalMutation, mutation, query } from "@/convex/server";
 import schema from "./schema";
 
 export const zMutation = zCustomMutation(mutation, NoOp);

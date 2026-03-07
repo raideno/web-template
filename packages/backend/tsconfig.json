@@ -18,8 +18,15 @@
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+
+    /* Path aliases — resolved by tsup at build time, NOT emitted into _generated */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/convex/*": ["./src/_generated/*"],
+    },
   },
   "include": ["./**/*"],
-  "exclude": ["./_generated"]
+  "exclude": ["./_generated", "dist"],
 }

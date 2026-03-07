@@ -10,17 +10,16 @@ import type {
   PhoneConfig,
 } from "@convex-dev/auth/server";
 
-import type { DataModel } from "./_generated/dataModel";
-
-import { internal } from "./_generated/api";
-import { internalQuery, mutation, query } from "./_generated/server";
+import type { DataModel } from "@/convex/dataModel";
+import { internal } from "@/convex/api";
+import { internalQuery, mutation, query } from "@/convex/server";
 
 import {
   AUTH_CODE_MAX_AGE_IN_SECONDS,
   AUTH_PROVIDER_NAME,
   AUTH_VERIFICATION_CODE_LENGTH,
   IS_PRODUCTION,
-} from "./parameters";
+} from "@/parameters";
 
 interface Params {
   identifier: string;

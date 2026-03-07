@@ -5,9 +5,9 @@ import { onboardingsTables } from "@raideno/convex-onboardings/schema";
 import { stripeTables } from "@raideno/convex-stripe/server";
 import { defineSchema } from "convex/server";
 
-import { FeedbacksTable } from "./models/feedbacks";
-import { CountersTable } from "./models/quotas";
-import { UsersTable } from "./models/users";
+import { FeedbacksTable } from "@/models/feedbacks";
+import { CountersTable } from "@/models/quotas";
+import { UsersTable } from "@/models/users";
 
 export default defineSchema({
   ...authTables,

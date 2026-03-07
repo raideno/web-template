@@ -1,8 +1,8 @@
 import { v } from "convex/values";
-import type { Id } from "../_generated/dataModel";
-import type { MutationCtx, QueryCtx } from "../_generated/server";
-import { defineServiceQuery } from "./factory";
-import { deriveBillingId } from "./quotas";
+import type { Id } from "@/convex/dataModel";
+import type { MutationCtx, QueryCtx } from "@/convex/server";
+import { defineServiceQuery } from "@/services/factory";
+import { deriveBillingId } from "@/services/quotas";
 
 export const isSubscribedService = defineServiceQuery({
   args: {

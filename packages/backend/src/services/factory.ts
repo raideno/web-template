@@ -9,8 +9,8 @@ import type {
   PropertyValidators,
   Validator,
 } from "convex/values";
-import type { ActionCtx, MutationCtx, QueryCtx } from "../_generated/server";
-import { internalMutation, internalQuery } from "../_generated/server";
+import type { ActionCtx, MutationCtx, QueryCtx } from "@/convex/server";
+import { internalMutation, internalQuery } from "@/convex/server";
 
 // ——— Context type guards ———————————————————————————————————————————
 

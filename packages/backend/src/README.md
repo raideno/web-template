@@ -7,7 +7,7 @@ A query function that takes two arguments looks like:
 
 ```ts
 // convex/myFunctions.ts
-import { query } from "./_generated/server";
+import { query } from "@/convex/server";
 import { v } from "convex/values";
 
 export const myQueryFunction = query({
@@ -46,7 +46,7 @@ A mutation function looks like:
 
 ```ts
 // convex/myFunctions.ts
-import { mutation } from "./_generated/server";
+import { mutation } from "@/convex/server";
 import { v } from "convex/values";
 
 export const myMutationFunction = mutation({

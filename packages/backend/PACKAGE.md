@@ -56,19 +56,19 @@ In your other repository's `package.json`:
 
 ```typescript
 // Import generated API
-import { api, internal } from 'backend'
+import { api, internal } from "backend";
 
 // Import types
-import type { DataModel, Doc } from 'backend'
+import type { DataModel, Doc } from "backend";
 
 // Import schema
-import { schema } from 'backend'
+import { schema } from "backend";
 
 // Import models and services
-import { feedbacksModel, magicService } from 'backend'
+import { feedbacksModel, magicService } from "backend";
 
 // Direct access to generated files
-import { FunctionReference } from 'backend/_generated/server'
+import { FunctionReference } from "backend/_generated/server";
 ```
 
 ## Package Exports

@@ -2,9 +2,9 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { HOUR, RateLimiter } from "@convex-dev/rate-limiter";
 import { z } from "zod";
 
-import { components } from "./_generated/api";
+import { components } from "@/convex/api";
 
-import { zMutation } from "./helpers";
+import { zMutation } from "@/helpers";
 
 const limiter = new RateLimiter(components.rateLimiter, {
   feedbacks: { kind: "fixed window", rate: 5, period: HOUR },

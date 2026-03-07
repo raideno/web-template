@@ -2,8 +2,8 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { defineOnboarding } from "@raideno/convex-onboardings";
 import { convexOnboardings } from "@raideno/convex-onboardings/server";
 import { v } from "convex/values";
-import { DataModel, Id } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { DataModel, Id } from "@/convex/dataModel";
+import { mutation, query } from "@/convex/server";
 
 export const ProfileOnboarding = defineOnboarding<DataModel>({
   id: "profile",

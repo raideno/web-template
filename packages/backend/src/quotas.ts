@@ -1,12 +1,12 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { ConvexError, v } from "convex/values";
 
-import type { Id } from "./_generated/dataModel";
+import type { Id } from "@/convex/dataModel";
 
-import { internalMutation, mutation, query } from "./_generated/server";
+import { internalMutation, mutation, query } from "@/convex/server";
 
-import { DEFAULT_QUOTAS } from "./models/quotas";
-import { deriveBillingId, QuotasService } from "./services/quotas";
+import { DEFAULT_QUOTAS } from "@/models/quotas";
+import { deriveBillingId, QuotasService } from "@/services/quotas";
 
 // TODO: move to the credits service file
 export const setup = internalMutation({

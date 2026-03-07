@@ -8,24 +8,19 @@ import { v } from "convex/values";
 import type { AnyDataModel, GenericActionCtx } from "convex/server";
 import type { Stripe } from "stripe";
 
-import {
-  action,
-  internalAction,
-  internalQuery,
-  query,
-} from "./_generated/server";
+import { action, internalAction, internalQuery, query } from "@/convex/server";
 
-import { analytics } from "./analytics";
+import { analytics } from "@/analytics";
 
-import { internal } from "./_generated/api";
+import { internal } from "@/convex/api";
 
-import { safeParseInt } from "./helpers";
+import { safeParseInt } from "@/helpers";
 import {
   DEFAULT_LIMIT,
   STRIPE_SECRET_KEY,
   STRIPE_WEBHOOK_SECRET,
-} from "./parameters";
-import { deriveBillingId } from "./services/quotas";
+} from "@/parameters";
+import { deriveBillingId } from "@/services/quotas";
 
 export const { store, stripe, sync } = internalConvexStripe({
   stripe: {

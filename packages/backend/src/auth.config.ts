@@ -1,4 +1,4 @@
-import { CONVEX_SITE_URL } from "./parameters";
+import { CONVEX_SITE_URL } from "@/parameters";
 
 export default {
   providers: [

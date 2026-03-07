@@ -1,0 +1,16 @@
+{
+  /* Build-specific TypeScript config used by tsup.
+   * Extends the base tsconfig but enables emit and targets the src/ entry point.
+   */
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "./dist",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "rootDir": "./src"
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["./src/_generated", "dist", "node_modules"]
+}

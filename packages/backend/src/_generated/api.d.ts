@@ -13,6 +13,7 @@ import type * as auth from "../auth.js";
 import type * as feedbacks from "../feedbacks.js";
 import type * as helpers from "../helpers.js";
 import type * as http from "../http.js";
+import type * as index from "../index.js";
 import type * as kv from "../kv.js";
 import type * as models_feedbacks from "../models/feedbacks.js";
 import type * as models_quotas from "../models/quotas.js";
@@ -37,6 +38,7 @@ declare const fullApi: ApiFromModules<{
   feedbacks: typeof feedbacks;
   helpers: typeof helpers;
   http: typeof http;
+  index: typeof index;
   kv: typeof kv;
   "models/feedbacks": typeof models_feedbacks;
   "models/quotas": typeof models_quotas;
