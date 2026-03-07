@@ -27,12 +27,6 @@ export interface AuthenticationContextType {
   signInGoogle: {
     initiate: () => Promise<{ redirectUrl: string }>;
   };
-  signInMagic: {
-    exchange: (params: { code: string }) => Promise<{
-      tokens: { token: string; refreshToken: string } | null;
-      redirectTo: string;
-    }>;
-  };
   signOut: () => Promise<void>;
 }
 
@@ -124,20 +118,6 @@ export async function loadAuthenticationContext(): Promise<AuthenticationContext
     },
   };
 
-  const signInMagic: AuthenticationContextType["signInMagic"] = {
-    exchange: async (params) => {
-      const response = await (convex.action(api.magics.exchange, {
-        code: params.code,
-      }) as ReturnType<AuthenticationContextType["signInMagic"]["exchange"]>);
-
-      if (response.tokens) {
-        await persistTokensAndInvalidate(response.tokens);
-      }
-
-      return response;
-    },
-  };
-
   const signOut = async () => {
     try {
       await convex.action(api.auth.signOut, {});
@@ -155,7 +135,6 @@ export async function loadAuthenticationContext(): Promise<AuthenticationContext
     signInOtp,
     signInPassword,
     signInGoogle,
-    signInMagic,
     signOut,
   };
 }

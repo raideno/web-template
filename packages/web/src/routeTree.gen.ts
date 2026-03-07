@@ -16,7 +16,6 @@ import { Route as mainPagesIndexRouteImport } from './routes/(main)/pages/index'
 import { Route as mainDashboardIndexRouteImport } from './routes/(main)/dashboard/index'
 import { Route as mainDashboardSubscribeRouteImport } from './routes/(main)/dashboard/subscribe'
 import { Route as mainDashboardPaymentRouteImport } from './routes/(main)/dashboard/payment'
-import { Route as mainAuthenticationMagicRouteImport } from './routes/(main)/authentication/magic'
 import { Route as mainPagesLayoutRouteRouteImport } from './routes/(main)/pages/_layout/route'
 import { Route as mainDashboardOnboardingsIndexRouteImport } from './routes/(main)/dashboard/onboardings/index'
 import { Route as mainPagesLayoutSlugRouteImport } from './routes/(main)/pages/_layout/$slug'
@@ -56,11 +55,6 @@ const mainDashboardPaymentRoute = mainDashboardPaymentRouteImport.update({
   path: '/payment',
   getParentRoute: () => mainDashboardRouteRoute,
 } as any)
-const mainAuthenticationMagicRoute = mainAuthenticationMagicRouteImport.update({
-  id: '/authentication/magic',
-  path: '/authentication/magic',
-  getParentRoute: () => mainRouteRoute,
-} as any)
 const mainPagesLayoutRouteRoute = mainPagesLayoutRouteRouteImport.update({
   id: '/pages/_layout',
   path: '/pages',
@@ -88,7 +82,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof mainDashboardRouteRouteWithChildren
   '/pages': typeof mainPagesLayoutRouteRouteWithChildren
-  '/authentication/magic': typeof mainAuthenticationMagicRoute
   '/dashboard/payment': typeof mainDashboardPaymentRoute
   '/dashboard/subscribe': typeof mainDashboardSubscribeRoute
   '/dashboard/': typeof mainDashboardIndexRoute
@@ -100,7 +93,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/pages': typeof mainPagesIndexRoute
-  '/authentication/magic': typeof mainAuthenticationMagicRoute
   '/dashboard/payment': typeof mainDashboardPaymentRoute
   '/dashboard/subscribe': typeof mainDashboardSubscribeRoute
   '/dashboard': typeof mainDashboardIndexRoute
@@ -114,7 +106,6 @@ export interface FileRoutesById {
   '/(main)': typeof mainRouteRouteWithChildren
   '/(main)/dashboard': typeof mainDashboardRouteRouteWithChildren
   '/(main)/pages/_layout': typeof mainPagesLayoutRouteRouteWithChildren
-  '/(main)/authentication/magic': typeof mainAuthenticationMagicRoute
   '/(main)/dashboard/payment': typeof mainDashboardPaymentRoute
   '/(main)/dashboard/subscribe': typeof mainDashboardSubscribeRoute
   '/(main)/dashboard/': typeof mainDashboardIndexRoute
@@ -129,7 +120,6 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/pages'
-    | '/authentication/magic'
     | '/dashboard/payment'
     | '/dashboard/subscribe'
     | '/dashboard/'
@@ -141,7 +131,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/pages'
-    | '/authentication/magic'
     | '/dashboard/payment'
     | '/dashboard/subscribe'
     | '/dashboard'
@@ -154,7 +143,6 @@ export interface FileRouteTypes {
     | '/(main)'
     | '/(main)/dashboard'
     | '/(main)/pages/_layout'
-    | '/(main)/authentication/magic'
     | '/(main)/dashboard/payment'
     | '/(main)/dashboard/subscribe'
     | '/(main)/dashboard/'
@@ -220,13 +208,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof mainDashboardPaymentRouteImport
       parentRoute: typeof mainDashboardRouteRoute
     }
-    '/(main)/authentication/magic': {
-      id: '/(main)/authentication/magic'
-      path: '/authentication/magic'
-      fullPath: '/authentication/magic'
-      preLoaderRoute: typeof mainAuthenticationMagicRouteImport
-      parentRoute: typeof mainRouteRoute
-    }
     '/(main)/pages/_layout': {
       id: '/(main)/pages/_layout'
       path: '/pages'
@@ -291,14 +272,12 @@ const mainPagesLayoutRouteRouteWithChildren =
 interface mainRouteRouteChildren {
   mainDashboardRouteRoute: typeof mainDashboardRouteRouteWithChildren
   mainPagesLayoutRouteRoute: typeof mainPagesLayoutRouteRouteWithChildren
-  mainAuthenticationMagicRoute: typeof mainAuthenticationMagicRoute
   mainPagesIndexRoute: typeof mainPagesIndexRoute
 }
 
 const mainRouteRouteChildren: mainRouteRouteChildren = {
   mainDashboardRouteRoute: mainDashboardRouteRouteWithChildren,
   mainPagesLayoutRouteRoute: mainPagesLayoutRouteRouteWithChildren,
-  mainAuthenticationMagicRoute: mainAuthenticationMagicRoute,
   mainPagesIndexRoute: mainPagesIndexRoute,
 }
 
