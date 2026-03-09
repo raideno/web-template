@@ -42,7 +42,7 @@
     "@raideno/convex-analytics": "^0.0.2",
     "@raideno/convex-kv": "^0.1.0",
     "@raideno/convex-onboardings": "^0.0.4",
-    "@raideno/convex-stripe": "^0.3.4",
+    "@raideno/convex-stripe": "^0.3.8",
     "convex": "^1.29.1",
     "convex-helpers": "^0.1.105",
     "fluent-convex": "^0.12.3",

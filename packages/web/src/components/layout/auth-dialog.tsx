@@ -45,9 +45,6 @@ const PhoneAuthSchema = z.object({
   phone: z.tuple([z.string(), z.string()]).register(MetadataRegistry, {
     controller: PhoneInputController as AnyController,
   }),
-  consent: z.boolean().register(MetadataRegistry, {
-    description: "I agree to receive WhatsApp messages.",
-  }),
 });
 
 const PhoneAuthCodeSchema = z.object({
@@ -143,11 +140,6 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ children }) => {
   }, [requireAuth, clearParamsAndMaybeRedirect, router]);
 
   const handleSendCode = async (data: z.infer<typeof PhoneAuthSchema>) => {
-    if (!data.consent) {
-      toast.error("You must agree to receive WhatsApp messages.");
-      return;
-    }
-
     const cleanedPhone = data.phone[1].replace(/^0/, "").replace(/\s/g, "");
 
     if (!/^\d+$/.test(cleanedPhone)) {
@@ -360,7 +352,7 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ children }) => {
                 <AutoForm.Root
                   onSubmit={handleSendCode}
                   schema={PhoneAuthSchema}
-                  defaultValues={{ phone: ["", ""], consent: true }}
+                  defaultValues={{ phone: ["", ""] }}
                 >
                   <AutoForm.Content />
                   <Flex mt="4">

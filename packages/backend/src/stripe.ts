@@ -1,8 +1,5 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
-import {
-  internalConvexStripe,
-  syncAllTables,
-} from "@raideno/convex-stripe/server";
+import { internalConvexStripe } from "@raideno/convex-stripe/server";
 import { v } from "convex/values";
 
 import type { AnyDataModel, GenericActionCtx } from "convex/server";
@@ -21,15 +18,15 @@ import {
   STRIPE_WEBHOOK_SECRET,
 } from "@/parameters";
 import { deriveBillingId } from "@/services/quotas";
+import schema from "@/schema";
+import { Id } from "./_generated/dataModel";
 
 export const { store, stripe, sync } = internalConvexStripe({
   stripe: {
     secret_key: STRIPE_SECRET_KEY,
     account_webhook_secret: STRIPE_WEBHOOK_SECRET,
   },
-  sync: {
-    tables: syncAllTables(),
-  },
+  schema: schema,
   callbacks: {
     // TODO: the callbacks must have two functions, a before and a after, this is important for payment related actions where we
     // add credits only after payment_status has changed
@@ -37,17 +34,24 @@ export const { store, stripe, sync } = internalConvexStripe({
      * Because with current implementation, we'll need to add a separate table to track paymentIds and whether refill has been applied or not.
      */
     afterChange: async (context, operation, event) => {
-      if (event.table === "stripeCheckoutSessions" && operation === "upsert") {
-        const checkoutSession = "" as any as Stripe.Checkout.Session;
-
-        checkoutSession.payment_status === "paid";
-      }
       if (event.table === "stripeCustomers" && operation === "upsert") {
         try {
-          /**
-           * TODO: check the new available data, if any email is specified, update the user record if none have been given.
-           */
-        } catch (error) {}
+          const customer = await context.db.get("stripeCustomers", event._id);
+
+          if (customer && customer.stripe.email && customer.entityId) {
+            const user = await context.db.get(
+              "users",
+              customer.entityId as Id<"users">,
+            );
+
+            if (user && !user.email)
+              await context.db.patch("users", user._id, {
+                email: customer.stripe.email,
+              });
+          }
+        } catch (error) {
+          console.log("[error](email retrieval):", error);
+        }
       }
       if (event.table === "stripeSubscriptions" && operation === "upsert") {
         try {
@@ -95,7 +99,7 @@ export const { store, stripe, sync } = internalConvexStripe({
             )
             .unique();
 
-          if (!customer) return;
+          if (!customer || !customer.entityId) return;
 
           await analytics.track(
             context,
@@ -257,7 +261,7 @@ export const subscribe = action({
 
     if (!userId) throw new Error("Unauthorized");
 
-    const checkout = await stripe.subscribe(context as any, {
+    const checkout = await stripe.subscribe(context, {
       createStripeCustomerIfMissing: true,
       entityId: userId,
       payment_method_collection: "if_required",
@@ -293,7 +297,7 @@ export const portal = action({
 
     if (!userId) throw new Error("Unauthorized");
 
-    const portal_ = await stripe.portal(context as any, {
+    const portal_ = await stripe.portal(context, {
       createStripeCustomerIfMissing: true,
       entityId: userId,
       return_url: args.returnRedirectUrl,
@@ -302,49 +306,3 @@ export const portal = action({
     return portal_;
   },
 });
-
-// TODO: create a refill intent and use its id as a referenceId, once payment successfull, set the status of that as 'completed'
-// TODO: put a listener on the status change to 'completed' to actually add the credits to the user account
-// $1.00 per credit unit
-export const CREDIT_UNIT_AMOUNT_CENTS = 100;
-
-// TODO: do a specific price in stripe for buying credits
-
-// export const buy = action({
-//   args: {
-//     quantity: v.number(),
-//   },
-//   handler: async (context, args) => {
-//     const userId = await getAuthUserId(context)
-
-//     if (!userId) throw new Error('Unauthorized')
-
-//     const subscription_ = await Subscription.isSubscribed(context, {
-//       userId: userId,
-//     })
-
-//     if (!subscription_.isSubscribed)
-//       throw new Error('You must have an active subscription to buy credits.')
-
-//     const payment = await stripe.pay(context, {
-//       mode: 'payment',
-//       entityId: userId,
-//       line_items: [
-//         {
-//           price_data: {
-//             currency: 'usd',
-//             product_data: { name: 'Credits Refill' },
-//             unit_amount: CREDIT_UNIT_AMOUNT_CENTS,
-//           },
-//           quantity: args.quantity,
-//         },
-//       ],
-//       referenceId: '',
-//       success_url: '',
-//       // return_url: '',
-//       cancel_url: '',
-//     })
-
-//     return { url: payment.url }
-//   },
-// })

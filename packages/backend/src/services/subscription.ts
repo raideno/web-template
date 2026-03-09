@@ -21,10 +21,7 @@ export const isSubscribedService = defineServiceQuery({
     }),
   ),
   ref: "services/subscription:isSubscribedBridge",
-  handler: async (
-    ctx: QueryCtx | MutationCtx,
-    args: { userId: Id<"users"> },
-  ) => {
+  handler: async (ctx, args) => {
     const customer = await ctx.db
       .query("stripeCustomers")
       .withIndex("byEntityId", (q) => q.eq("entityId", args.userId))
