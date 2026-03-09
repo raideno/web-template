@@ -1,41 +1,38 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
-import { HOUR, RateLimiter } from "@convex-dev/rate-limiter";
+import { WithZod } from "fluent-convex/zod";
+import { HOUR } from "@convex-dev/rate-limiter";
 import { z } from "zod";
 
-import { components } from "@/convex/api";
+import { convex } from "@";
+import { WithAuthenticationMiddleware } from "@/middlewares/auth";
+import { WithRateLimitingMiddlewareFactory } from "@/middlewares/limiter";
 
-import { zMutation } from "@/helpers";
-
-const limiter = new RateLimiter(components.rateLimiter, {
-  feedbacks: { kind: "fixed window", rate: 5, period: HOUR },
-});
-
-export const send = zMutation({
-  args: {
-    email: z.email().optional(),
-    title: z.string().max(128),
-    content: z.string().max(2048),
-    tag: z.union([
-      z.literal("bug"),
-      z.literal("feature"),
-      z.literal("rating"),
-      z.literal("other"),
-    ]),
-    urls: z.array(z.url()).max(4),
-    attachmentUrls: z.array(z.url()).max(8),
-  },
-  handler: async (context, args) => {
-    const userId = await getAuthUserId(context);
-
-    if (!userId) throw new Error("You must be logged in to send feedback.");
-
-    const status = await limiter.limit(context, "feedbacks", { key: userId });
-
-    if (!status.ok)
-      throw new Error(
-        `Rate limit exceeded. Please try again later ${status.retryAfter} seconds.`,
-      );
-
+export const send = convex
+  .mutation()
+  .extend(WithZod)
+  .use(WithAuthenticationMiddleware)
+  .use(
+    WithRateLimitingMiddlewareFactory("feedbacks", {
+      kind: "fixed window",
+      rate: 5,
+      period: HOUR,
+    }),
+  )
+  .input(
+    z.object({
+      email: z.email().optional(),
+      title: z.string().max(128),
+      content: z.string().max(2048),
+      tag: z.union([
+        z.literal("bug"),
+        z.literal("feature"),
+        z.literal("rating"),
+        z.literal("other"),
+      ]),
+      urls: z.array(z.url()).max(4),
+      attachmentUrls: z.array(z.url()).max(8),
+    }),
+  )
+  .handler(async (context, args) => {
     await context.db.insert("feedbacks", {
       email: args.email,
       title: args.title,
@@ -43,7 +40,7 @@ export const send = zMutation({
       tag: args.tag,
       urls: args.urls,
       attachmentUrls: args.attachmentUrls,
-      userId: userId,
+      userId: context.user.id,
     });
-  },
-});
+  })
+  .public();

@@ -1,7 +1,6 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { ConvexError, v } from "convex/values";
 
-import { internalMutation, mutation, query } from "@/convex/server";
+import { internalMutation } from "@/convex/server";
 
 import {
   deriveBillingId,
@@ -9,6 +8,8 @@ import {
   QuotasGetService,
   QuotasSetupService,
 } from "@/services/quotas";
+import { convex } from "@";
+import { WithAuthenticationMiddleware } from "./middlewares/auth";
 
 export const setup = internalMutation({
   args: {
@@ -27,35 +28,31 @@ export const setup = internalMutation({
   },
 });
 
-export const get = query({
-  args: {
+export const get = convex
+  .query()
+  .use(WithAuthenticationMiddleware)
+  .input({
     billingId: v.string(),
-  },
-  handler: async (context, args) => {
-    const userId = await getAuthUserId(context);
-
-    if (!userId) return null;
-
+  })
+  .handler(async (context, args) => {
     return await QuotasGetService.execute(context, {
-      userId,
+      userId: context.user.id,
       billingId: args.billingId,
     });
-  },
-});
+  })
+  .public();
 
-export const consume = mutation({
-  args: {
+export const consume = convex
+  .mutation()
+  .use(WithAuthenticationMiddleware)
+  .input({
     quota: v.string(),
     quantity: v.number(),
-  },
-  handler: async (context, args) => {
-    const userId = await getAuthUserId(context);
-
-    if (!userId) throw new ConvexError("Unauthorized");
-
+  })
+  .handler(async (context, args) => {
     const customer = await context.db
       .query("stripeCustomers")
-      .withIndex("byEntityId", (q) => q.eq("entityId", userId))
+      .withIndex("byEntityId", (q) => q.eq("entityId", context.user.id))
       .unique();
 
     if (!customer) {
@@ -84,10 +81,10 @@ export const consume = mutation({
     }
 
     return await QuotasConsumeService.execute(context, {
-      userId,
+      userId: context.user.id,
       quota: args.quota,
       quantity: args.quantity,
       billingId,
     });
-  },
-});
+  })
+  .public();

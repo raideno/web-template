@@ -1,7 +1,7 @@
 import { Password } from "@convex-dev/auth/providers/Password";
 import { Phone } from "@convex-dev/auth/providers/Phone";
 import Google from "@auth/core/providers/google";
-import { convexAuth, getAuthUserId } from "@convex-dev/auth/server";
+import { convexAuth } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { alphabet, generateRandomString } from "oslo/crypto";
 
@@ -12,7 +12,7 @@ import type {
 
 import type { DataModel } from "@/convex/dataModel";
 import { internal } from "@/convex/api";
-import { internalQuery, mutation, query } from "@/convex/server";
+import { internalQuery } from "@/convex/server";
 
 import {
   AUTH_CODE_MAX_AGE_IN_SECONDS,
@@ -20,6 +20,8 @@ import {
   AUTH_VERIFICATION_CODE_LENGTH,
   IS_PRODUCTION,
 } from "@/parameters";
+import { convex } from "@";
+import { WithAuthenticationMiddleware } from "./middlewares/auth";
 
 interface Params {
   identifier: string;
@@ -72,43 +74,41 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
   },
 });
 
-export const self = query({
-  args: {},
-  handler: async (context) => {
-    const userId = await getAuthUserId(context);
-    if (!userId) return null;
-    const user = await context.db.get(userId);
+export const self = convex
+  .query()
+  .use(WithAuthenticationMiddleware)
+  .handler(async (context) => {
+    const user = await context.db.get(context.user.id);
     if (!user) return null;
-    return user;
-  },
-});
+  })
+  .public();
 
-export const update = mutation({
-  args: {
+export const update = convex
+  .mutation()
+  .use(WithAuthenticationMiddleware)
+  .input({
     name: v.optional(v.string()),
-  },
-  handler: async (context, args) => {
-    const userId = await getAuthUserId(context);
-    if (!userId) throw new Error("Unauthorized");
-    await context.db.patch(userId, { name: args.name });
+  })
+  .handler(async (context, args) => {
+    await context.db.patch(context.user.id, { name: args.name });
     return { success: true };
-  },
-});
+  })
+  .public();
 
-export const developer = mutation({
-  args: {
+export const developer = convex
+  .mutation()
+  .use(WithAuthenticationMiddleware)
+  .input({
     enabled: v.boolean(),
-  },
-  handler: async (context, args) => {
-    const userId = await getAuthUserId(context);
-    if (!userId) throw new Error("Unauthorized");
-    const user = await context.db.get(userId);
+  })
+  .handler(async (context, args) => {
+    const user = await context.db.get(context.user.id);
     if (!user) throw new Error("User not found");
     if (!user.developer) throw new Error("Developer profile not found");
-    await context.db.patch(userId, { developer: { enabled: args.enabled } });
+    await context.db.patch(user._id, { developer: { enabled: args.enabled } });
     return { success: true };
-  },
-});
+  })
+  .public();
 
 export const get = internalQuery({
   args: {

@@ -23,6 +23,7 @@
     /* Path aliases — resolved by tsup at build time, NOT emitted into _generated */
     "baseUrl": ".",
     "paths": {
+      "@": ["./src/index.ts"],
       "@/*": ["./src/*"],
       "@/convex/*": ["./src/_generated/*"],
     },

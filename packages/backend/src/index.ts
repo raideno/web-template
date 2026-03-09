@@ -25,3 +25,8 @@ export { default as schema } from "@/schema";
 export { UsersTable } from "@/models/users";
 export { FeedbacksTable } from "@/models/feedbacks";
 export { CountersTable, DEFAULT_QUOTAS } from "@/models/quotas";
+
+import { DataModel } from "@/convex/dataModel";
+import { createBuilder } from "fluent-convex";
+
+export const convex = createBuilder<DataModel>();

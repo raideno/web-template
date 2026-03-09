@@ -14,12 +14,15 @@ import { internal } from "@/convex/api";
 import { safeParseInt } from "@/helpers";
 import {
   DEFAULT_LIMIT,
+  SITE_URL,
   STRIPE_SECRET_KEY,
   STRIPE_WEBHOOK_SECRET,
 } from "@/parameters";
 import { deriveBillingId } from "@/services/quotas";
 import schema from "@/schema";
 import { Id } from "./_generated/dataModel";
+import { convex } from "@";
+import { WithAuthenticationMiddleware } from "./middlewares/auth";
 
 export const { store, stripe, sync } = internalConvexStripe({
   stripe: {
@@ -154,9 +157,9 @@ export const get = internalQuery({
   },
 });
 
-export const products = query({
-  args: {},
-  handler: async (context) => {
+export const products = convex
+  .query()
+  .handler(async (context) => {
     const prices = await context.db.query("stripePrices").collect();
     const products_ = await context.db.query("stripeProducts").collect();
 
@@ -166,26 +169,23 @@ export const products = query({
         .filter((price) => price.stripe.productId === product.productId)
         .filter((price) => price.stripe.active),
     }));
-  },
-});
+  })
+  .public();
 
-export const subscription = query({
-  args: {},
-  handler: async (context) => {
-    const userId = await getAuthUserId(context);
-
-    if (!userId) return null;
-
+export const subscription = convex
+  .query()
+  .use(WithAuthenticationMiddleware)
+  .handler(async (context) => {
     const customer = await context.db
       .query("stripeCustomers")
-      .withIndex("byEntityId", (q) => q.eq("entityId", userId))
+      .withIndex("byEntityId", (q) => q.eq("entityId", context.user.id))
       .unique();
 
     if (!customer) {
       console.warn(
         "[error]:",
         "user",
-        userId,
+        context.user.id,
         "exists but with stripe customer associated.",
       );
       return null;
@@ -242,67 +242,63 @@ export const subscription = query({
       status: stripeSubscription.status,
       cancel_at_period_end: stripeSubscription.cancel_at_period_end,
     };
-  },
-});
+  })
+  .public();
 
-export const subscribe = action({
-  args: {
+export const subscribe = convex
+  .action()
+  .use(WithAuthenticationMiddleware)
+  .input({
     priceId: v.string(),
+    // TODO: remove, determined by the app
     successRedirectUrl: v.string(),
     cancelRedirectUrl: v.string(),
-  },
-  handler: async (
-    context,
-    args,
-  ): Promise<{
-    url: string | null;
-  }> => {
-    const userId = await getAuthUserId(context);
+  })
+  .handler(
+    async (
+      context,
+      args,
+    ): Promise<{
+      url: string | null;
+    }> => {
+      const checkout = await stripe.subscribe(context, {
+        createStripeCustomerIfMissing: true,
+        entityId: context.user.id,
+        payment_method_collection: "if_required",
+        priceId: args.priceId,
+        mode: "subscription",
+        success_url: args.successRedirectUrl,
+        cancel_url: args.cancelRedirectUrl,
+        allow_promotion_codes: true,
+      });
 
-    if (!userId) throw new Error("Unauthorized");
-
-    const checkout = await stripe.subscribe(context, {
-      createStripeCustomerIfMissing: true,
-      entityId: userId,
-      payment_method_collection: "if_required",
-      priceId: args.priceId,
-      mode: "subscription",
-      success_url: args.successRedirectUrl,
-      cancel_url: args.cancelRedirectUrl,
-      allow_promotion_codes: true,
-    });
-
-    await analytics.track(
-      context as unknown as GenericActionCtx<AnyDataModel>,
-      {
-        name: "subscription.attempt",
-        properties: {
-          priceId: args.priceId,
+      await analytics.track(
+        context as unknown as GenericActionCtx<AnyDataModel>,
+        {
+          name: "subscription.attempt",
+          properties: {
+            priceId: args.priceId,
+          },
+          distinctId: context.user.id,
         },
-        distinctId: userId,
-      },
-      { blocking: false },
-    );
+        { blocking: false },
+      );
 
-    return checkout;
-  },
-});
+      return checkout;
+    },
+  )
+  .public();
 
-export const portal = action({
-  args: {
-    returnRedirectUrl: v.string(),
-  },
-  handler: async (context, args) => {
-    const userId = await getAuthUserId(context);
-
-    if (!userId) throw new Error("Unauthorized");
-
+export const portal = convex
+  .action()
+  .use(WithAuthenticationMiddleware)
+  .handler(async (context, args) => {
     const portal_ = await stripe.portal(context, {
       createStripeCustomerIfMissing: true,
-      entityId: userId,
-      return_url: args.returnRedirectUrl,
+      entityId: context.user.id,
+      return_url: SITE_URL,
     });
 
     return portal_;
-  },
-});
+  })
+  .public();

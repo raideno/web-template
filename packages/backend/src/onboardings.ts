@@ -1,9 +1,9 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { defineOnboarding } from "@raideno/convex-onboardings";
 import { convexOnboardings } from "@raideno/convex-onboardings/server";
 import { v } from "convex/values";
 import { DataModel, Id } from "@/convex/dataModel";
-import { mutation, query } from "@/convex/server";
+import { WithAuthenticationMiddleware } from "./middlewares/auth";
+import { convex } from "@";
 
 export const ProfileOnboarding = defineOnboarding<DataModel>({
   id: "profile",
@@ -45,29 +45,35 @@ export const onboardings = convexOnboardings({
   },
 });
 
-export const list = query({
-  args: {},
-  handler: async (context, args) => {
-    const userId = await getAuthUserId(context);
-    if (!userId) return [];
+export const list = convex
+  .query()
+  .use(WithAuthenticationMiddleware)
+  .handler(async (context) => {
+    return onboardings.list(context, context.user.id);
+  })
+  .public();
 
-    return onboardings.list(context, userId);
-  },
-});
-
-export const onboard = mutation({
-  args: {
+export const onboard = convex
+  .mutation()
+  .use(WithAuthenticationMiddleware)
+  .input({
     id: v.string(),
     data: v.any(),
-  },
-  handler: async (context, args) => {
-    const userId = await getAuthUserId(context);
-    if (!userId) throw new Error("Not authenticated");
-
-    const onboarding = await onboardings.status(context, userId, args.id);
+  })
+  .handler(async (context, args) => {
+    const onboarding = await onboardings.status(
+      context,
+      context.user.id,
+      args.id,
+    );
     if (!onboarding) throw new Error("Onboarding not valid for this user");
 
     // TODO: make the data type safe and the onboardingId type safe as well
-    await onboardings.onboard(context, userId, onboarding.id, args.data);
-  },
-});
+    await onboardings.onboard(
+      context,
+      context.user.id,
+      onboarding.id,
+      args.data,
+    );
+  })
+  .public();
